@@ -317,7 +317,6 @@
         .profile-menu-item.logout { color: var(--danger) }
         .profile-menu-item.logout i { color: var(--danger) }
 
-        /* Hold Sales specific styles */
         .hold-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; background: var(--card); transition: .2s; }
         .hold-item:hover { border-color: var(--primary); }
         .hold-info { flex: 1; }
@@ -434,8 +433,14 @@
                     </div>
                     <div class="summary">
                         <div class="sum-row"><span>Subtotal</span><strong id="subtotal">৳ 0</strong></div>
+<div class="sum-row"><span>Tax / VAT</span><strong id="tax">৳ 0</strong></div>
                         <div class="sum-row"><span>Discount</span><input class="discount-input" id="discount" type="number" value="0" min="0" style="width:90px;text-align:right"></div>
-                        <div class="sum-row"><span>Tax / VAT</span><strong id="tax">৳ 0</strong></div>
+                        
+                        <div class="sum-row"><span>Shipping Charge</span><input class="discount-input" id="shipping" type="number" value="0" min="0" style="width:90px;text-align:right"></div>
+                        <div class="sum-row" id="shippingAddressRow" style="display:none; flex-direction:column; align-items:flex-start; margin-top:4px;">
+                            <span style="margin-bottom:6px">Shipping Address</span>
+                            <input class="discount-input" id="shippingAddress" type="text" placeholder="Enter delivery address..." style="width:100%; text-align:left">
+                        </div>
                         <div class="sum-row total"><span>Total Payable</span><strong id="total">৳ 0</strong></div>
                     </div>
 
@@ -464,7 +469,7 @@
             <div class="modal-body">
                 <div class="input-group-pro mb-3">
                     <div class="input-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-                    <input id="holdSearch" placeholder="Search hold sale by customer, invoice or date..." autocomplete="off" oninput="renderHoldList()">
+                    <input id="holdSearch" placeholder="Search hold sale by customer, phone, invoice or date..." autocomplete="off" oninput="renderHoldList()">
                 </div>
                 <div id="holdListContainer" style="max-height: 45vh; overflow: auto;"></div>
             </div>
@@ -656,11 +661,14 @@
     function updateTotal() {
         let sub = cart.reduce((a, p) => a + p.price * p.qty, 0);
         let dis = Number(document.getElementById('discount').value) || 0;
+        let shipping = Number(document.getElementById('shipping').value) || 0;
         let tax = Math.round(sub * .05);
-        let total = Math.max(0, sub + tax - dis);
+        let total = Math.max(0, sub + tax + shipping - dis);
         document.getElementById('subtotal').textContent = money(sub);
         document.getElementById('tax').textContent = money(tax);
         document.getElementById('total').textContent = money(total);
+        
+        document.getElementById('shippingAddressRow').style.display = shipping > 0 ? 'flex' : 'none';
     }
 
     function generateInvoiceId() {
@@ -673,6 +681,8 @@
     function clearCart() {
         cart = [];
         document.getElementById('discount').value = 0;
+        document.getElementById('shipping').value = 0;
+        document.getElementById('shippingAddress').value = '';
         document.getElementById('invoice').textContent = generateInvoiceId();
         document.getElementById('customerSearch').value = '';
         document.getElementById('customer').value = 'Walk-in Customer';
@@ -689,6 +699,7 @@
     }
 
     document.getElementById('discount').addEventListener('input', updateTotal);
+    document.getElementById('shipping').addEventListener('input', updateTotal);
 
     function filterProducts() {
         const q = searchInput.value.trim();
@@ -723,15 +734,34 @@
         
         let sub = cart.reduce((a, p) => a + p.price * p.qty, 0);
         let dis = Number(document.getElementById('discount').value) || 0;
-        let total = Math.max(0, sub + Math.round(sub * .05) - dis);
+        let ship = Number(document.getElementById('shipping').value) || 0;
+        let total = Math.max(0, sub + Math.round(sub * .05) + ship - dis);
+
+        const customerSearchInput = document.getElementById('customerSearch').value;
+        const customerNameVal = document.getElementById('customer').value;
+        
+        let phoneVal = 'N/A';
+        if (customerSearchInput.includes('·')) {
+            phoneVal = customerSearchInput.split('·')[1].trim();
+        } else {
+            const foundCust = customers.find(c => c.name === customerNameVal);
+            if (foundCust) phoneVal = foundCust.phone;
+        }
+
+        const now = new Date();
+        const holdTimeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const holdObj = {
             id: Date.now(),
             invoice: document.getElementById('invoice').textContent,
-            date: new Date().toLocaleString(),
-            customerName: document.getElementById('customer').value,
-            customerSearchVal: document.getElementById('customerSearch').value,
+            date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            holdTime: holdTimeFormatted,
+            customerName: customerNameVal,
+            customerPhone: phoneVal,
+            customerSearchVal: customerSearchInput,
             discount: document.getElementById('discount').value,
+            shipping: document.getElementById('shipping').value,
+            shippingAddress: document.getElementById('shippingAddress').value,
             cart: JSON.parse(JSON.stringify(cart)),
             total: total
         };
@@ -739,7 +769,7 @@
         holdSales.push(holdObj);
         localStorage.setItem('takahata_hold_sales', JSON.stringify(holdSales));
         
-        clearCart(); // Clears and sets a fresh invoice ID
+        clearCart();
         updateHoldBadge();
         showToast('Sale put on hold successfully!');
     }
@@ -760,8 +790,10 @@
         const filtered = holdSales.filter(h => {
             if (!q) return true;
             return h.customerName.toLowerCase().includes(q) ||
+                   (h.customerPhone && h.customerPhone.toLowerCase().includes(q)) ||
                    h.invoice.toLowerCase().includes(q) ||
-                   h.date.toLowerCase().includes(q);
+                   h.date.toLowerCase().includes(q) ||
+                   (h.holdTime && h.holdTime.toLowerCase().includes(q));
         });
 
         if (!holdSales.length) {
@@ -779,9 +811,9 @@
             return `
             <div class="hold-item">
                 <div class="hold-info">
-                    <div class="hold-title">${h.customerName} - <span style="color:var(--primary)">${money(h.total)}</span></div>
+                    <div class="hold-title">${h.customerName} <span style="font-weight:normal;color:var(--muted);font-size:11px;">(<i class="fa-solid fa-phone me-1"></i>${h.customerPhone || 'N/A'})</span> - <span style="color:var(--primary)">${money(h.total)}</span></div>
                     <div class="hold-meta">
-                        <i class="fa-regular fa-clock me-1"></i>${h.date} &nbsp;|&nbsp; 
+                        <i class="fa-regular fa-clock me-1"></i>${h.date} ${h.holdTime ? 'at ' + h.holdTime : ''} &nbsp;|&nbsp; 
                         <strong>${h.invoice}</strong> &nbsp;|&nbsp; 
                         Items: ${h.cart.reduce((a, b) => a + b.qty, 0)}
                     </div>
@@ -804,6 +836,8 @@
         cart = h.cart;
         document.getElementById('invoice').textContent = h.invoice;
         document.getElementById('discount').value = h.discount;
+        document.getElementById('shipping').value = h.shipping || 0;
+        document.getElementById('shippingAddress').value = h.shippingAddress || '';
         document.getElementById('customer').value = h.customerName;
         document.getElementById('customerSearch').value = h.customerSearchVal || h.customerName;
         
@@ -888,8 +922,9 @@
     function getPayable() {
         let sub = cart.reduce((a, p) => a + p.price * p.qty, 0);
         let dis = Number(document.getElementById('discount').value) || 0;
+        let shipping = Number(document.getElementById('shipping').value) || 0;
         let tax = Math.round(sub * .05);
-        return Math.max(0, sub + tax - dis);
+        return Math.max(0, sub + tax + shipping - dis);
     }
 
     function openModal(id) { document.getElementById(id).classList.add('show'); }
@@ -1003,24 +1038,47 @@
         
         let subtotal = cart.reduce((a, p) => a + (p.price * p.qty), 0);
         let discount = Number(document.getElementById("discount").value) || 0;
+        let shipping = Number(document.getElementById("shipping").value) || 0;
+        let shippingAddress = document.getElementById("shippingAddress").value;
         let tax = Math.round(subtotal * 0.05);
         let due = Math.max(0, payable - received);
         let change = Math.max(0, received - payable);
+        
+        // কাস্টমারের ফোন নম্বর বের করা হচ্ছে
+        const customerSearchInput = document.getElementById('customerSearch').value;
         let customerName = document.getElementById("customer").value;
+        let customerPhone = 'N/A';
+        
+        if (customerSearchInput.includes('·')) {
+            customerPhone = customerSearchInput.split('·')[1].trim();
+        } else {
+            const foundCust = customers.find(c => c.name === customerName);
+            if (foundCust) customerPhone = foundCust.phone;
+        }
+
+        // পেমেন্টের সময় বের করা হচ্ছে
+        const now = new Date();
+        const paymentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         cart.forEach(item => {
             const prod = products.find(p => p.barcode === item.barcode);
             if (prod) prod.stock -= item.qty;
         });
 
+        // JSON Data Update
         const saleJson = {
             invoice_no: document.getElementById("invoice").textContent,
-            invoice_date: new Date().toLocaleString(),
-            customer: {name: customerName},
-            summary: { subtotal: subtotal, discount: discount, tax: tax, total_payable: payable, total_received: received, due: due, change: change, payment_status: due > 0 ? "Due" : "Paid" },
+            invoice_date: now.toLocaleString(),
+            payment_time: paymentTime, // নতুন যুক্ত করা হয়েছে 
+            customer: {
+                name: customerName,
+                phone: customerPhone // নতুন যুক্ত করা হয়েছে 
+            },
+            summary: { subtotal: subtotal, discount: discount, tax: tax, shipping: shipping, shipping_address: shippingAddress, total_payable: payable, total_received: received, due: due, change: change, payment_status: due > 0 ? "Due" : "Paid" },
             products: cart.map(item => ({ name: item.name, barcode: item.barcode, category: item.category, unit_price: item.price, quantity: item.qty, line_total: item.price * item.qty })),
             payment_received: payments.map(pay => ({ method: pay.method, amount: pay.amount }))
         };
+        
         console.log(saleJson);
         
         closeModal("paymentModal");
