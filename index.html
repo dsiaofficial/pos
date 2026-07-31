@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* =========================================
+           CSS VARIABLES & GLOBAL STYLES
+           ========================================= */
         :root {
             --paper-width: 80mm;
             --primary: #16a34a;
@@ -25,9 +28,7 @@
             --danger: #dc2626
         }
 
-        * {
-            box-sizing: border-box
-        }
+        * { box-sizing: border-box }
 
         body {
             margin: 0;
@@ -47,6 +48,9 @@
             --soft: #173c29
         }
 
+        /* =========================================
+           SIDEBAR STYLES (Fixed Header added)
+           ========================================= */
         .sidebar {
             position: fixed;
             inset: 0 auto 0 0;
@@ -58,11 +62,14 @@
             overflow: auto
         }
 
-        .sidebar.collapsed {
-            width: 78px
-        }
+        .sidebar.collapsed { width: 78px }
 
+        /* [UPDATED] Fixed Sidebar Brand Header */
         .brand {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--card);
             height: 76px;
             display: flex;
             align-items: center;
@@ -82,28 +89,16 @@
             font-size: 19px
         }
 
-        .brand-title {
-            font-size: 16px;
-            font-weight: 800
-        }
-
-        .brand-sub {
-            font-size: 9px;
-            color: var(--muted);
-            letter-spacing: 1px
-        }
+        .brand-title { font-size: 16px; font-weight: 800 }
+        .brand-sub { font-size: 9px; color: var(--muted); letter-spacing: 1px }
 
         .sidebar.collapsed .brand-text,
         .sidebar.collapsed .menu-label,
         .sidebar.collapsed .menu-text,
         .sidebar.collapsed .arrow,
-        .sidebar.collapsed .badge-count {
-            display: none
-        }
+        .sidebar.collapsed .badge-count { display: none }
 
-        .sidebar.collapsed .brand {
-            padding: 0 19px
-        }
+        .sidebar.collapsed .brand { padding: 0 19px }
 
         .menu-label {
             font-size: 10px;
@@ -113,9 +108,7 @@
             padding: 22px 20px 9px
         }
 
-        .menu-item {
-            margin: 3px 10px
-        }
+        .menu-item { margin: 3px 10px }
 
         .menu-link {
             width: 100%;
@@ -135,33 +128,27 @@
         }
 
         .menu-link:hover,
-        .menu-link.active {
-            background: var(--soft);
-            color: var(--primary)
-        }
+        .menu-link.active { background: var(--soft); color: var(--primary) }
 
-        .menu-icon {
-            width: 22px;
-            text-align: center;
-            font-size: 15px
-        }
+        .menu-icon { width: 22px; text-align: center; font-size: 15px }
+        .menu-text { flex: 1; text-align: left }
+        
+        /* [UPDATED] Arrow Animation for dropdown */
+        .arrow { font-size: 10px; transition: transform 0.3s ease; }
+        .dropdown-menu-item.open .arrow { transform: rotate(180deg); }
 
-        .menu-text {
-            flex: 1;
-            text-align: left
+        /* [UPDATED] Smooth Dropdown Animation */
+        .submenu { 
+            max-height: 0; 
+            overflow: hidden; 
+            padding: 0 0 0 44px; 
+            opacity: 0;
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
-
-        .arrow {
-            font-size: 10px
-        }
-
-        .submenu {
-            display: none;
-            padding: 3px 0 4px 44px
-        }
-
-        .submenu.show {
-            display: block
+        .submenu.show { 
+            max-height: 350px; 
+            padding: 3px 0 4px 44px; 
+            opacity: 1;
         }
 
         .submenu a {
@@ -173,20 +160,13 @@
             border-radius: 7px
         }
 
-        .submenu a:hover {
-            background: var(--hover);
-            color: var(--primary)
-        }
+        .submenu a:hover { background: var(--hover); color: var(--primary) }
 
-        .main {
-            margin-left: 260px;
-            min-height: 100vh;
-            transition: .25s
-        }
-
-        .sidebar.collapsed~.main {
-            margin-left: 78px
-        }
+        /* =========================================
+           MAIN LAYOUT & TOPBAR
+           ========================================= */
+        .main { margin-left: 260px; min-height: 100vh; transition: .25s }
+        .sidebar.collapsed~.main { margin-left: 78px }
 
         .topbar {
             height: 76px;
@@ -201,15 +181,9 @@
             z-index: 900
         }
 
-        .top-left,
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px
-        }
+        .top-left, .top-actions { display: flex; align-items: center; gap: 12px }
 
-        .toggle-btn,
-        .icon-btn {
+        .toggle-btn, .icon-btn {
             width: 38px;
             height: 38px;
             border: 1px solid var(--border);
@@ -232,21 +206,11 @@
             outline: 0
         }
 
-        .search-wrap {
-            position: relative
-        }
+        .search-wrap { position: relative }
+        .search-wrap i { position: absolute; left: 13px; top: 12px; color: var(--muted) }
 
-        .search-wrap i {
-            position: absolute;
-            left: 13px;
-            top: 12px;
-            color: var(--muted)
-        }
-
-        .profile {
-            position: relative
-        }
-
+        /* User Profile Info styles */
+        .profile { position: relative }
         .profile-btn {
             display: flex;
             align-items: center;
@@ -267,38 +231,17 @@
             font-weight: 700
         }
 
-        .profile-info {
-            font-size: 12px;
-            text-align: left
-        }
+        .profile-info { font-size: 12px; text-align: left }
+        .profile-role { font-size: 10px; color: var(--muted) }
 
-        .profile-role {
-            font-size: 10px;
-            color: var(--muted)
-        }
+        /* =========================================
+           PAGE CONTENT & POS LAYOUT
+           ========================================= */
+        .content { padding: 24px }
 
-        .content {
-            padding: 24px
-        }
-
-        .page-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 800;
-            margin: 0
-        }
-
-        .page-sub {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 5px
-        }
+        .page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px }
+        .page-title { font-size: 22px; font-weight: 800; margin: 0 }
+        .page-sub { font-size: 12px; color: var(--muted); margin-top: 5px }
 
         .pos-layout {
             display: grid;
@@ -313,26 +256,11 @@
             padding: 18px
         }
 
-        .card-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px
-        }
+        .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px }
+        .card-title { font-size: 14px; color: var(--text); font-weight: 800 }
 
-        .card-title {
-            font-size: 14px;
-            color: var(--text);
-            font-weight: 800
-        }
-
-        .category-bar {
-            display: flex;
-            gap: 8px;
-            overflow: auto;
-            padding-bottom: 10px
-        }
-
+        /* Category Filter Styles */
+        .category-bar { display: flex; gap: 8px; overflow: auto; padding-bottom: 10px }
         .category {
             border: 1px solid var(--border);
             background: var(--bg);
@@ -344,14 +272,9 @@
             white-space: nowrap;
             cursor: pointer
         }
+        .category.active, .category:hover { background: var(--primary); border-color: var(--primary); color: #fff }
 
-        .category.active,
-        .category:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #fff
-        }
-
+        /* Products Grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -369,11 +292,7 @@
             cursor: pointer;
             transition: .2s
         }
-
-        .product:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px)
-        }
+        .product:hover { border-color: var(--primary); transform: translateY(-2px) }
 
         .product-icon {
             height: 80px;
@@ -384,37 +303,14 @@
             font-size: 29px;
             margin-bottom: 10px
         }
+        .product-name { font-size: 11px; font-weight: 700; line-height: 1.4; color: var(--text); }
+        .product-meta { font-size: 10px; color: var(--muted); margin-top: 4px }
+        .product-price { font-size: 13px; font-weight: 800; color: var(--primary); margin-top: 7px }
 
-        .product-name {
-            font-size: 11px;
-            font-weight: 700;
-            line-height: 1.4;
-            color: var(--text);
-        }
+        /* Sale Panel */
+        .sale-panel { position: sticky; top: 94px }
 
-        .product-meta {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 4px
-        }
-
-        .product-price {
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--primary);
-            margin-top: 7px
-        }
-
-        .sale-panel {
-            position: sticky;
-            top: 94px
-        }
-
-        .customer-box {
-            display: flex;
-            gap: 8px
-        }
-
+        .customer-box { display: flex; gap: 8px }
         .customer-box select,
         .customer-box input,
         .discount-input,
@@ -428,11 +324,7 @@
             outline: 0;
             font-size: 11px
         }
-
-        .customer-box select {
-            flex: 1
-        }
-
+        .customer-box select { flex: 1 }
         .customer-box button {
             width: 40px;
             border: 0;
@@ -441,56 +333,17 @@
             color: #fff
         }
 
-        .cart {
-            max-height: 300px;
-            overflow: auto;
-            margin: 15px 0
-        }
+        /* Cart Area */
+        .cart { max-height: 300px; overflow: auto; margin: 15px 0 }
+        .cart-empty { text-align: center; padding: 45px 15px; color: var(--muted); font-size: 12px }
+        .cart-empty i { font-size: 35px; margin-bottom: 10px; display: block; opacity: .45 }
 
-        .cart-empty {
-            text-align: center;
-            padding: 45px 15px;
-            color: var(--muted);
-            font-size: 12px
-        }
+        .cart-item { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border) }
+        .cart-item-info { flex: 1 }
+        .cart-item-name { font-size: 11px; font-weight: 700; color: var(--text); }
+        .cart-item-price { font-size: 10px; color: var(--muted); margin-top: 3px }
 
-        .cart-empty i {
-            font-size: 35px;
-            margin-bottom: 10px;
-            display: block;
-            opacity: .45
-        }
-
-        .cart-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border)
-        }
-
-        .cart-item-info {
-            flex: 1
-        }
-
-        .cart-item-name {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .cart-item-price {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 3px
-        }
-
-        .qty {
-            display: flex;
-            align-items: center;
-            gap: 7px
-        }
-
+        .qty { display: flex; align-items: center; gap: 7px }
         .qty button {
             width: 25px;
             height: 25px;
@@ -499,54 +352,17 @@
             color: var(--text);
             border-radius: 6px
         }
+        .qty strong { font-size: 11px; min-width: 14px; text-align: center; color: var(--text); }
 
-        .qty strong {
-            font-size: 11px;
-            min-width: 14px;
-            text-align: center;
-            color: var(--text);
-        }
+        .remove { border: 0; background: transparent; color: var(--danger); font-size: 12px }
 
-        .remove {
-            border: 0;
-            background: transparent;
-            color: var(--danger);
-            font-size: 12px
-        }
+        /* Calculation & Total Area */
+        .summary { border-top: 1px solid var(--border); padding-top: 14px; margin-bottom: 14px; }
+        .sum-row { display: flex; justify-content: space-between; margin: 9px 0; font-size: 11px; color: var(--muted) }
+        .sum-row.total { font-size: 18px; font-weight: 800; color: var(--text); padding-top: 10px; border-top: 1px dashed var(--border) }
+        .sum-row.total strong { color: var(--primary) }
 
-        .summary {
-            border-top: 1px solid var(--border);
-            padding-top: 14px;
-            margin-bottom: 14px;
-        }
-
-        .sum-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 9px 0;
-            font-size: 11px;
-            color: var(--muted)
-        }
-
-        .sum-row.total {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text);
-            padding-top: 10px;
-            border-top: 1px dashed var(--border)
-        }
-
-        .sum-row.total strong {
-            color: var(--primary)
-        }
-
-        .payment-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin: 14px 0
-        }
-
+        .payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0 }
         .pay-btn {
             height: 42px;
             border: 1px solid var(--border);
@@ -556,13 +372,7 @@
             font-size: 11px;
             font-weight: 700
         }
-
-        .pay-btn.active,
-        .pay-btn:hover {
-            border-color: var(--primary);
-            background: var(--soft);
-            color: var(--primary)
-        }
+        .pay-btn.active, .pay-btn:hover { border-color: var(--primary); background: var(--soft); color: var(--primary) }
 
         .complete {
             width: 100%;
@@ -573,115 +383,87 @@
             color: #fff;
             font-weight: 800
         }
+        .complete:hover { background: var(--primary-dark) }
 
-        .complete:hover {
-            background: var(--primary-dark)
-        }
+        /* Modal Overlay */
+        .overlay { display: none; position: fixed; inset: 0; background: #0008; z-index: 950 }
+        .overlay.show { display: block }
 
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #0008;
-            z-index: 950
-        }
-
-        .overlay.show {
-            display: block
-        }
-
-        .toast {
+        /* =========================================
+           [UPDATED] MULTI TOAST NOTIFICATION STYLES
+           ========================================= */
+        .toast-container-custom {
             position: fixed;
             right: 25px;
             bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999; /* Ensure it stays on top */
+        }
+
+        .toast-msg {
             background: var(--card);
             border: 1px solid var(--border);
-            padding: 13px 16px;
+            padding: 13px 18px;
             border-radius: 10px;
-            box-shadow: 0 10px 30px #0002;
-            display: none;
-            z-index: 2000;
-            font-size: 12px
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInToast 0.3s ease forwards;
+            opacity: 0;
+            transform: translateX(100%);
+            min-width: 250px;
         }
 
-        .toast.show {
-            display: block
+        .toast-msg i {
+            font-size: 16px;
+            color: var(--primary);
         }
 
-        @media(max-width:1200px) {
-            .product-grid {
-                grid-template-columns: repeat(3, 1fr)
-            }
+        .toast-msg.hide {
+            animation: fadeOutToast 0.3s ease forwards;
         }
+
+        @keyframes slideInToast {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeOutToast {
+            to { opacity: 0; transform: translateX(100%); margin-bottom: -50px; }
+        }
+
+        /* =========================================
+           RESPONSIVE STYLES
+           ========================================= */
+        @media(max-width:1200px) { .product-grid { grid-template-columns: repeat(3, 1fr) } }
 
         @media(max-width:900px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 260px
-            }
-
-            .sidebar.mobile-show {
-                transform: translateX(0)
-            }
-
-            .main,
-            .sidebar.collapsed~.main {
-                margin-left: 0
-            }
-
-            .topbar {
-                padding: 0 16px
-            }
-
-            .search-wrap {
-                display: none
-            }
-
-            .profile-info {
-                display: none
-            }
-
-            .pos-layout {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .sale-panel {
-                order: -1;
-                position: static;
-            }
+            .sidebar { transform: translateX(-100%); width: 260px }
+            .sidebar.mobile-show { transform: translateX(0) }
+            .main, .sidebar.collapsed~.main { margin-left: 0 }
+            .topbar { padding: 0 16px }
+            .search-wrap, .profile-info { display: none }
+            .pos-layout { display: flex; flex-direction: column; }
+            .sale-panel { order: -1; position: static; }
         }
 
         @media(max-width:600px) {
-            .content {
-                padding: 15px
-            }
-
-            .page-head {
-                align-items: flex-start;
-                gap: 12px;
-                flex-direction: column
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(2, 1fr)
-            }
-
-            .card {
-                padding: 14px
-            }
-
-            .card-head {
-                align-items: flex-start;
-                gap: 10px;
-                flex-wrap: wrap
-            }
-
-            .card-head .search {
-                width: 220px
-            }
+            .content { padding: 15px }
+            .page-head { align-items: flex-start; gap: 12px; flex-direction: column }
+            .product-grid { grid-template-columns: repeat(2, 1fr) }
+            .card { padding: 14px }
+            .card-head { align-items: flex-start; gap: 10px; flex-wrap: wrap; width: 100% }
+            .card-head .search { width: 220px }
+            .card-head .input-group-pro { min-width: 240px }
+            .input-group-pro { width: 100% }
         }
 
+        /* Modal Boxes */
         .modal-backdrop-custom {
             display: none;
             position: fixed;
@@ -692,10 +474,7 @@
             justify-content: center;
             padding: 15px
         }
-
-        .modal-backdrop-custom.show {
-            display: flex
-        }
+        .modal-backdrop-custom.show { display: flex }
 
         .modal-box {
             width: min(560px, 100%);
@@ -707,38 +486,12 @@
             box-shadow: 0 20px 60px #0003
         }
 
-        .modal-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--border)
-        }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border) }
+        .modal-title { font-size: 15px; font-weight: 800 }
+        .modal-close { border: 0; background: transparent; color: var(--muted); font-size: 18px }
+        .modal-body { padding: 20px }
 
-        .modal-title {
-            font-size: 15px;
-            font-weight: 800
-        }
-
-        .modal-close {
-            border: 0;
-            background: transparent;
-            color: var(--muted);
-            font-size: 18px
-        }
-
-        .modal-body {
-            padding: 20px
-        }
-
-        .form-label-custom {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--muted);
-            margin-bottom: 6px;
-            display: block
-        }
-
+        .form-label-custom { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px; display: block }
         .form-control-custom {
             width: 100%;
             height: 40px;
@@ -751,15 +504,8 @@
             font-size: 12px
         }
 
-        .payment-line {
-            display: grid;
-            grid-template-columns: 1fr 1fr 38px;
-            gap: 8px;
-            margin-bottom: 9px
-        }
-
-        .payment-line select,
-        .payment-line input {
+        .payment-line { display: grid; grid-template-columns: 1fr 1fr 38px; gap: 8px; margin-bottom: 9px }
+        .payment-line select, .payment-line input {
             height: 38px;
             border: 1px solid var(--border);
             background: var(--bg);
@@ -769,76 +515,25 @@
             font-size: 11px;
             outline: 0
         }
+        .remove-payment { border: 0; border-radius: 8px; background: #feecec; color: var(--danger) }
 
-        .remove-payment {
-            border: 0;
-            border-radius: 8px;
-            background: #feecec;
-            color: var(--danger)
-        }
+        .payment-summary { background: var(--bg); border-radius: 10px; padding: 13px; margin-top: 15px }
+        .payment-summary-row { display: flex; justify-content: space-between; font-size: 11px; margin: 7px 0; color: var(--muted) }
+        .payment-summary-row strong { color: var(--text) }
+        .payment-summary-row.total { border-top: 1px dashed var(--border); padding-top: 10px; font-weight: 800; color: var(--text) }
+        .payment-summary-row.total strong { color: var(--primary); font-size: 16px }
 
-        .payment-summary {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 13px;
-            margin-top: 15px
-        }
-
-        .payment-summary-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            margin: 7px 0;
-            color: var(--muted)
-        }
-
-        .payment-summary-row strong {
-            color: var(--text)
-        }
-
-        .payment-summary-row.total {
-            border-top: 1px dashed var(--border);
-            padding-top: 10px;
-            font-weight: 800;
-            color: var(--text)
-        }
-
-        .payment-summary-row.total strong {
-            color: var(--primary);
-            font-size: 16px
-        }
-
-        .customer-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px
-        }
-
-        .customer-grid .full {
-            grid-column: 1/-1
-        }
-
-        .modal-footer-custom {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 18px
-        }
+        .customer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+        .customer-grid .full { grid-column: 1/-1 }
+        .modal-footer-custom { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px }
 
         @media(max-width:500px) {
-            .customer-grid {
-                grid-template-columns: 1fr
-            }
-
-            .customer-grid .full {
-                grid-column: auto
-            }
-
-            .payment-line {
-                grid-template-columns: 1fr 1fr 34px
-            }
+            .customer-grid { grid-template-columns: 1fr }
+            .customer-grid .full { grid-column: auto }
+            .payment-line { grid-template-columns: 1fr 1fr 34px }
         }
 
+        /* Search Input Pro */
         .input-group-pro {
             display: flex;
             align-items: center;
@@ -850,12 +545,7 @@
             overflow: hidden;
             transition: .2s
         }
-
-        .input-group-pro:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, .10)
-        }
-
+        .input-group-pro:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22, 163, 74, .10) }
         .input-group-pro .input-icon {
             width: 40px;
             height: 100%;
@@ -865,7 +555,6 @@
             font-size: 12px;
             border-right: 1px solid var(--border)
         }
-
         .input-group-pro input {
             flex: 1;
             height: 100%;
@@ -877,7 +566,6 @@
             font-size: 11px;
             min-width: 0
         }
-
         .shortcut-key {
             min-width: 34px;
             height: 22px;
@@ -894,29 +582,10 @@
             box-shadow: 0 1px 2px #0001
         }
 
-        .customer-search-wrap {
-            flex: 1;
-            min-width: 0
-        }
+        .customer-search-wrap { flex: 1; min-width: 0 }
+        .customer-box { align-items: center }
 
-        .customer-box {
-            align-items: center
-        }
-
-        @media(max-width:600px) {
-            .input-group-pro {
-                width: 100%
-            }
-
-            .card-head .input-group-pro {
-                min-width: 240px
-            }
-
-            .card-head {
-                width: 100%
-            }
-        }
-
+        /* Search Results Dropdown */
         .customer-results {
             position: absolute;
             left: 0;
@@ -931,64 +600,18 @@
             z-index: 1200;
             display: none
         }
+        .customer-results.show { display: block }
 
-        .customer-results.show {
-            display: block
-        }
+        .customer-result { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer }
+        .customer-result:last-child { border-bottom: 0 }
+        .customer-result:hover { background: var(--hover) }
+        .customer-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--soft); color: var(--primary); display: grid; place-items: center; font-size: 11px; font-weight: 800 }
+        .customer-result-info { flex: 1; min-width: 0 }
+        .customer-result-name { font-size: 11px; font-weight: 800; color: var(--text) }
+        .customer-result-phone { font-size: 10px; color: var(--muted); margin-top: 2px }
+        .customer-result-empty { padding: 14px; text-align: center; color: var(--muted); font-size: 11px }
 
-        .customer-result {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer
-        }
-
-        .customer-result:last-child {
-            border-bottom: 0
-        }
-
-        .customer-result:hover {
-            background: var(--hover)
-        }
-
-        .customer-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--soft);
-            color: var(--primary);
-            display: grid;
-            place-items: center;
-            font-size: 11px;
-            font-weight: 800
-        }
-
-        .customer-result-info {
-            flex: 1;
-            min-width: 0
-        }
-
-        .customer-result-name {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--text)
-        }
-
-        .customer-result-phone {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 2px
-        }
-
-        .customer-result-empty {
-            padding: 14px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 11px
-        }
-
+        /* Profile Dropdown Menu */
         .profile-dropdown {
             position: absolute;
             right: 0;
@@ -1002,29 +625,10 @@
             display: none;
             z-index: 1500
         }
-
-        .profile-dropdown.show {
-            display: block
-        }
-
-        .profile-dropdown-head {
-            padding: 10px 11px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 5px
-        }
-
-        .profile-dropdown-name {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--text)
-        }
-
-        .profile-dropdown-role {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 3px
-        }
-
+        .profile-dropdown.show { display: block }
+        .profile-dropdown-head { padding: 10px 11px; border-bottom: 1px solid var(--border); margin-bottom: 5px }
+        .profile-dropdown-name { font-size: 12px; font-weight: 800; color: var(--text) }
+        .profile-dropdown-role { font-size: 10px; color: var(--muted); margin-top: 3px }
         .profile-menu-item {
             width: 100%;
             display: flex;
@@ -1039,25 +643,12 @@
             text-align: left;
             cursor: pointer
         }
+        .profile-menu-item:hover { background: var(--hover); color: var(--primary) }
+        .profile-menu-item i { width: 16px; color: var(--muted) }
+        .profile-menu-item.logout { color: var(--danger) }
+        .profile-menu-item.logout i { color: var(--danger) }
 
-        .profile-menu-item:hover {
-            background: var(--hover);
-            color: var(--primary)
-        }
-
-        .profile-menu-item i {
-            width: 16px;
-            color: var(--muted)
-        }
-
-        .profile-menu-item.logout {
-            color: var(--danger)
-        }
-
-        .profile-menu-item.logout i {
-            color: var(--danger)
-        }
-
+        /* Hold Sales List items */
         .hold-item {
             display: flex;
             justify-content: space-between;
@@ -1069,32 +660,11 @@
             background: var(--card);
             transition: .2s;
         }
-
-        .hold-item:hover {
-            border-color: var(--primary);
-        }
-
-        .hold-info {
-            flex: 1;
-        }
-
-        .hold-title {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .hold-meta {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 5px;
-        }
-
-        .hold-actions {
-            display: flex;
-            gap: 6px;
-        }
-
+        .hold-item:hover { border-color: var(--primary); }
+        .hold-info { flex: 1; }
+        .hold-title { font-size: 12px; font-weight: 800; color: var(--text); }
+        .hold-meta { font-size: 11px; color: var(--muted); margin-top: 5px; }
+        .hold-actions { display: flex; gap: 6px; }
         .hold-actions button {
             width: 34px;
             height: 34px;
@@ -1105,28 +675,14 @@
             cursor: pointer;
             transition: 0.2s;
         }
+        .btn-resume { background: var(--soft); color: var(--primary); }
+        .btn-resume:hover { background: var(--primary); color: #fff; }
+        .btn-delete { background: #feecec; color: var(--danger); }
+        .btn-delete:hover { background: var(--danger); color: #fff; }
 
-        .btn-resume {
-            background: var(--soft);
-            color: var(--primary);
-        }
-
-        .btn-resume:hover {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        .btn-delete {
-            background: #feecec;
-            color: var(--danger);
-        }
-
-        .btn-delete:hover {
-            background: var(--danger);
-            color: #fff;
-        }
-
-        /* --- Professional Draggable Calculator CSS --- */
+        /* =========================================
+           DRAGGABLE CALCULATOR CSS 
+           ========================================= */
         .calc-container {
             position: fixed;
             top: 85px;
@@ -1155,24 +711,9 @@
             user-select: none;
         }
 
-        .calc-header:active {
-            cursor: grabbing;
-        }
-
-        .calc-header button {
-            border: 0;
-            background: transparent;
-            color: #fff;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .calc-screen {
-            padding: 15px;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-        }
-
+        .calc-header:active { cursor: grabbing; }
+        .calc-header button { border: 0; background: transparent; color: #fff; cursor: pointer; font-size: 15px; }
+        .calc-screen { padding: 15px; background: var(--bg); border-bottom: 1px solid var(--border); }
         .calc-screen input {
             width: 100%;
             border: 0;
@@ -1183,14 +724,7 @@
             color: var(--text);
             outline: none;
         }
-
-        .calc-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1px;
-            background: var(--border);
-        }
-
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); }
         .calc-buttons button {
             border: 0;
             background: var(--card);
@@ -1201,30 +735,16 @@
             cursor: pointer;
             transition: 0.2s;
         }
-
-        .calc-buttons button:hover {
-            background: var(--hover);
-        }
-
-        .calc-buttons button.op {
-            color: var(--primary);
-            font-size: 17px;
-            background: var(--soft);
-        }
-
-        .calc-buttons button.eq {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        .calc-buttons button.eq:hover {
-            background: var(--primary-dark);
-        }
+        .calc-buttons button:hover { background: var(--hover); }
+        .calc-buttons button.op { color: var(--primary); font-size: 17px; background: var(--soft); }
+        .calc-buttons button.eq { background: var(--primary); color: #fff; }
+        .calc-buttons button.eq:hover { background: var(--primary-dark); }
     </style>
 </head>
 
 <body>
     <div class="overlay" id="overlay"></div>
+
     <aside class="sidebar" id="sidebar">
         <div class="brand">
             <div class="brand-logo"><i class="fa-solid fa-store"></i></div>
@@ -1233,46 +753,47 @@
                 <div class="brand-sub">SUPER SHOP MANAGEMENT</div>
             </div>
         </div>
+        
         <div class="menu-label">MAIN MENU</div>
-        <div class="menu-item"><a class="menu-link" href="27.html"><span class="menu-icon"><i
-                        class="fa-solid fa-chart-pie"></i></span><span class="menu-text">Dashboard</span></a></div>
-        <div class="menu-item"><a class="menu-link active" href="#"><span class="menu-icon"><i
-                        class="fa-solid fa-cash-register"></i></span><span class="menu-text">POS / New Sale</span><span
-                    class="badge-count">F2</span></a></div>
-        <div class="menu-item dropdown-menu-item"><button class="menu-link dropdown-toggle-btn"><span
-                    class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span><span
-                    class="menu-text">Sales</span><i class="fa-solid fa-chevron-down arrow"></i></button>
-            <div class="submenu"><a href="#">All Sales</a><a href="#">New Sale</a><a href="#">Sales Return</a><a
-                    href="#">Invoices</a><a href="#">Customer Due</a></div>
+        <div class="menu-item"><a class="menu-link" href="27.html"><span class="menu-icon"><i class="fa-solid fa-chart-pie"></i></span><span class="menu-text">Dashboard</span></a></div>
+        <div class="menu-item"><a class="menu-link active" href="#"><span class="menu-icon"><i class="fa-solid fa-cash-register"></i></span><span class="menu-text">POS / New Sale</span><span class="badge-count">F2</span></a></div>
+        
+        <div class="menu-item dropdown-menu-item"><button class="menu-link dropdown-toggle-btn"><span class="menu-icon"><i class="fa-solid fa-cart-shopping"></i></span><span class="menu-text">Sales</span><i class="fa-solid fa-chevron-down arrow"></i></button>
+            <div class="submenu"><a href="#">All Sales</a><a href="#">New Sale</a><a href="#">Sales Return</a><a href="#">Invoices</a><a href="#">Customer Due</a></div>
         </div>
-        <div class="menu-item dropdown-menu-item"><button class="menu-link dropdown-toggle-btn"><span
-                    class="menu-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span
-                    class="menu-text">Products</span><i class="fa-solid fa-chevron-down arrow"></i></button>
-            <div class="submenu"><a href="#">All Products</a><a href="#">Add Product</a><a href="#">Categories</a><a
-                    href="#">Brands</a></div>
+        
+        <div class="menu-item dropdown-menu-item"><button class="menu-link dropdown-toggle-btn"><span class="menu-icon"><i class="fa-solid fa-bag-shopping"></i></span><span class="menu-text">Purchases</span><i class="fa-solid fa-chevron-down arrow"></i></button>
+            <div class="submenu"><a href="#">All Purchases</a><a href="#">Add Purchase</a><a href="#">Purchase Return</a></div>
         </div>
+
+        <div class="menu-item dropdown-menu-item"><button class="menu-link dropdown-toggle-btn"><span class="menu-icon"><i class="fa-solid fa-boxes-stacked"></i></span><span class="menu-text">Products</span><i class="fa-solid fa-chevron-down arrow"></i></button>
+            <div class="submenu"><a href="#">All Products</a><a href="#">Add Product</a><a href="#">Categories</a><a href="#">Brands</a></div>
+        </div>
+        
         <div class="menu-label">MANAGEMENT</div>
-        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i
-                        class="fa-solid fa-warehouse"></i></span><span class="menu-text">Inventory</span></a></div>
-        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i
-                        class="fa-solid fa-users"></i></span><span class="menu-text">Customers</span></a></div>
-        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i
-                        class="fa-solid fa-money-bill-transfer"></i></span><span class="menu-text">Accounting</span></a>
-        </div>
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-users"></i></span><span class="menu-text">Customers</span></a></div>
+        
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-truck-field"></i></span><span class="menu-text">Suppliers</span></a></div>
+        
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span><span class="menu-text">Inventory</span></a></div>
+        
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-building-user"></i></span><span class="menu-text">Warehouses</span></a></div>
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-code-branch"></i></span><span class="menu-text">Branches (Brunch)</span></a></div>
+
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-money-bill-transfer"></i></span><span class="menu-text">Accounting</span></a></div>
+        
         <div class="menu-label">REPORTS & SYSTEM</div>
-        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i
-                        class="fa-solid fa-chart-line"></i></span><span class="menu-text">Reports & Analytics</span></a>
-        </div>
-        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i
-                        class="fa-solid fa-gear"></i></span><span class="menu-text">System Settings</span></a></div>
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-chart-line"></i></span><span class="menu-text">Reports & Analytics</span></a></div>
+        <div class="menu-item"><a class="menu-link" href="#"><span class="menu-icon"><i class="fa-solid fa-gear"></i></span><span class="menu-text">System Settings</span></a></div>
     </aside>
+
     <main class="main">
         <header class="topbar">
-            <div class="top-left"><button class="toggle-btn" id="sidebarToggle"><i
-                        class="fa-solid fa-bars"></i></button></div>
-            <div class="top-actions"><button class="icon-btn" id="themeBtn"><i
-                        class="fa-solid fa-moon"></i></button><button class="icon-btn"><i
-                        class="fa-regular fa-bell"></i></button>
+            <div class="top-left"><button class="toggle-btn" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button></div>
+            <div class="top-actions">
+                <button class="icon-btn" id="themeBtn"><i class="fa-solid fa-moon"></i></button>
+                <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                
                 <div class="profile">
                     <button class="profile-btn" id="profileBtn" type="button">
                         <div class="avatar">NA</div>
@@ -1286,16 +807,14 @@
                             <div class="profile-dropdown-name">Nayeem Admin</div>
                             <div class="profile-dropdown-role">Super Administrator</div>
                         </div>
-                        <button class="profile-menu-item" onclick="showToast('My Profile clicked')"><i
-                                class="fa-solid fa-user"></i> My Profile</button>
-                        <button class="profile-menu-item" onclick="showToast('Settings clicked')"><i
-                                class="fa-solid fa-gear"></i> Account Settings</button>
-                        <button class="profile-menu-item logout" onclick="profileLogout()"><i
-                                class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                        <button class="profile-menu-item" onclick="showToast('My Profile clicked')"><i class="fa-solid fa-user"></i> My Profile</button>
+                        <button class="profile-menu-item" onclick="showToast('Settings clicked')"><i class="fa-solid fa-gear"></i> Account Settings</button>
+                        <button class="profile-menu-item logout" onclick="profileLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                     </div>
                 </div>
             </div>
         </header>
+
         <section class="content">
             <div class="page-head">
                 <div>
@@ -1303,6 +822,7 @@
                     <div class="page-sub">Create a new sales invoice quickly and efficiently.</div>
                 </div>
             </div>
+            
             <div class="pos-layout">
                 <div class="card">
                     <div class="card-head">
@@ -1310,40 +830,38 @@
                         <div style="display:flex;align-items:center;gap:8px">
                             <div class="input-group-pro" style="width:min(390px,100%)">
                                 <div class="input-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                <input id="search" placeholder="Search product by name or barcode..."
-                                    autocomplete="off">
+                                <input id="search" placeholder="Search product by name or barcode..." autocomplete="off">
                                 <span class="shortcut-key">F2</span>
                             </div>
                         </div>
                     </div>
-                    <div class="category-bar"><button class="category active">All Products</button><button
-                            class="category">Grocery</button><button class="category">Beverages</button><button
-                            class="category">Bakery</button><button class="category">Snacks</button><button
-                            class="category">Personal Care</button></div>
+                    
+                    <div class="category-bar">
+                        <button class="category active">All Products</button>
+                        <button class="category">Grocery</button>
+                        <button class="category">Beverages</button>
+                        <button class="category">Bakery</button>
+                        <button class="category">Snacks</button>
+                        <button class="category">Personal Care</button>
+                    </div>
+                    
                     <div class="product-grid" id="products"></div>
                 </div>
+
                 <div class="card sale-panel">
                     <div class="card-head d-flex align-items-center">
                         <div class="card-title">Current Sale</div>
                         <span id="invoice" style="font-size:10px;color:var(--muted); margin-left:auto;"></span>
 
-                        <!-- Calculator Button Added Right Next to Current Sale -->
-                        <button class="btn btn-sm ms-2 border-0 shadow-none p-0" style="color: var(--text);"
-                            onclick="toggleCalculator()" title="Calculator">
-                            <i class="fa-solid fa-calculator" style="font-size: 15px;"></i>
-                        </button>
-
-                        <button class="btn btn-sm ms-2 border-0 shadow-none p-0" style="color: var(--text);"
-                            onclick="clearCart()" title="Reset Sale">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>
+                        <button class="btn btn-sm ms-2 border-0 shadow-none p-0" style="color: var(--text);" onclick="toggleCalculator()" title="Calculator"><i class="fa-solid fa-calculator" style="font-size: 15px;"></i></button>
+                        <button class="btn btn-sm ms-2 border-0 shadow-none p-0" style="color: var(--text);" onclick="clearCart()" title="Reset Sale"><i class="fa-solid fa-rotate-left"></i></button>
                     </div>
+                    
                     <div class="customer-box">
                         <div class="customer-search-wrap" style="position:relative">
                             <div class="input-group-pro">
                                 <div class="input-icon"><i class="fa-solid fa-user"></i></div>
-                                <input id="customerSearch" placeholder="Search customer by name or mobile..."
-                                    autocomplete="off">
+                                <input id="customerSearch" placeholder="Search customer by name or mobile..." autocomplete="off">
                                 <span class="shortcut-key">F3</span>
                             </div>
                             <div class="customer-results" id="customerResults"></div>
@@ -1353,63 +871,52 @@
                             <option value="Rahim Ahmed">Rahim Ahmed</option>
                             <option value="Karim Store">Karim Store</option>
                         </select>
-                        <button onclick="openModal('customerModal')" title="Add New Customer"><i
-                                class="fa-solid fa-plus"></i></button>
+                        <button onclick="openModal('customerModal')" title="Add New Customer"><i class="fa-solid fa-plus"></i></button>
                     </div>
+                    
                     <div class="cart" id="cart">
                         <div class="cart-empty"><i class="fa-solid fa-cart-shopping"></i>No products added yet</div>
                     </div>
+                    
                     <div class="summary">
                         <div class="sum-row"><span>Subtotal</span><strong id="subtotal">৳ 0</strong></div>
                         <div class="sum-row"><span>Tax / VAT</span><strong id="tax">৳ 0</strong></div>
-                        <div class="sum-row"><span>Discount</span><input class="discount-input" id="discount"
-                                type="number" value="0" min="0" style="width:90px;text-align:right"></div>
+                        <div class="sum-row"><span>Discount</span><input class="discount-input" id="discount" type="number" value="0" min="0" style="width:90px;text-align:right"></div>
 
-                        <div class="sum-row"><span>Shipping Charge</span><input class="discount-input" id="shipping"
-                                type="number" value="0" min="0" style="width:90px;text-align:right"></div>
-                        <div class="sum-row" id="shippingAddressRow"
-                            style="display:none; flex-direction:column; align-items:flex-start; margin-top:4px;">
-                            <span style="margin-bottom:6px">Shipping Address</span>
-                            <input class="discount-input" id="shippingAddress" type="text"
-                                placeholder="Enter delivery address..." style="width:100%; text-align:left">
+                        <div class="sum-row">
+                            <span>Shipping + Service Charge</span>
+                            <input class="discount-input" id="shipping" type="number" value="0" min="0" style="width:90px;text-align:right">
                         </div>
+                        <div class="sum-row" id="shippingAddressRow" style="display:none; flex-direction:column; align-items:flex-start; margin-top:4px;">
+                            <span style="margin-bottom:6px">Shipping Address</span>
+                            <input class="discount-input" id="shippingAddress" type="text" placeholder="Enter delivery address..." style="width:100%; text-align:left">
+                        </div>
+                        
                         <div class="sum-row total"><span>Total Payable</span><strong id="total">৳ 0</strong></div>
                     </div>
 
                     <div style="display:flex;gap:8px;margin-bottom:10px">
-                        <button class="btn flex-fill d-flex align-items-center justify-content-center border"
-                            style="height:42px; font-size:12px; font-weight:700; background:var(--bg); color:var(--text)"
-                            onclick="holdSale()">
+                        <button class="btn flex-fill d-flex align-items-center justify-content-center border" style="height:42px; font-size:12px; font-weight:700; background:var(--bg); color:var(--text)" onclick="holdSale()">
                             <i class="fa-solid fa-pause me-2" style="color:#f59e0b"></i> Hold
                         </button>
-                        <button class="btn flex-fill d-flex align-items-center justify-content-center border"
-                            style="height:42px; font-size:12px; font-weight:700; background:var(--bg); color:var(--text)"
-                            onclick="openHoldModal()">
+                        <button class="btn flex-fill d-flex align-items-center justify-content-center border" style="height:42px; font-size:12px; font-weight:700; background:var(--bg); color:var(--text)" onclick="openHoldModal()">
                             <i class="fa-solid fa-list me-2" style="color:var(--primary)"></i> Hold List
-                            <span class="badge ms-2"
-                                style="background:var(--primary); color:#fff; font-size:10px; border-radius:5px"
-                                id="holdBadge">0</span>
+                            <span class="badge ms-2" style="background:var(--primary); color:#fff; font-size:10px; border-radius:5px" id="holdBadge">0</span>
                         </button>
                     </div>
 
-                    <button class="complete mb-2"
-                        style="background:var(--soft);color:var(--primary);border:1px solid var(--primary)"
-                        onclick="openPaymentModal()"><i class="fa-solid fa-money-bill-transfer me-2"></i>Payment
-                        Received</button>
+                    <button class="complete mb-2" style="background:var(--soft);color:var(--primary);border:1px solid var(--primary)" onclick="openPaymentModal()"><i class="fa-solid fa-money-bill-transfer me-2"></i>Payment Received</button>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Draggable Calculator Markup -->
     <div id="drag-calculator" class="calc-container" style="display: none;">
         <div id="calc-header" class="calc-header">
             <span><i class="fa-solid fa-calculator me-1"></i> Calculator</span>
             <button onclick="toggleCalculator()"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="calc-screen">
-            <input type="text" id="calc-display" disabled value="0">
-        </div>
+        <div class="calc-screen"><input type="text" id="calc-display" disabled value="0"></div>
         <div class="calc-buttons">
             <button onclick="calcClear()" style="color: var(--danger)">C</button>
             <button onclick="calcDel()" style="color: #f59e0b">DEL</button>
@@ -1437,15 +944,13 @@
     <div class="modal-backdrop-custom" id="holdModal">
         <div class="modal-box" style="width: min(600px, 100%)">
             <div class="modal-head">
-                <div class="modal-title"><i class="fa-solid fa-pause me-2" style="color:var(--primary)"></i>Hold Sales
-                    List</div>
+                <div class="modal-title"><i class="fa-solid fa-pause me-2" style="color:var(--primary)"></i>Hold Sales List</div>
                 <button class="modal-close" onclick="closeModal('holdModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <div class="input-group-pro mb-3">
                     <div class="input-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-                    <input id="holdSearch" placeholder="Search hold sale by customer, phone, invoice or date..."
-                        autocomplete="off" oninput="renderHoldList()">
+                    <input id="holdSearch" placeholder="Search hold sale by customer, phone, invoice or date..." autocomplete="off" oninput="renderHoldList()">
                 </div>
                 <div id="holdListContainer" style="max-height: 45vh; overflow: auto;"></div>
             </div>
@@ -1455,28 +960,21 @@
     <div class="modal-backdrop-custom" id="customerModal">
         <div class="modal-box">
             <div class="modal-head">
-                <div class="modal-title"><i class="fa-solid fa-user-plus me-2" style="color:var(--primary)"></i>Add New
-                    Customer</div>
-                <button class="modal-close" onclick="closeModal('customerModal')"><i
-                        class="fa-solid fa-xmark"></i></button>
+                <div class="modal-title"><i class="fa-solid fa-user-plus me-2" style="color:var(--primary)"></i>Add New Customer</div>
+                <button class="modal-close" onclick="closeModal('customerModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <div class="customer-grid">
-                    <div><label class="form-label-custom">Customer Name *</label><input class="form-control-custom"
-                            id="newCustomerName" placeholder="Enter customer name"></div>
-                    <div><label class="form-label-custom">Mobile Number *</label><input class="form-control-custom"
-                            id="newCustomerMobile" placeholder="01XXXXXXXXX"></div>
-                    <div><label class="form-label-custom">Email</label><input class="form-control-custom"
-                            id="newCustomerEmail" type="email" placeholder="customer@email.com"></div>
-                    <div><label class="form-label-custom">Opening Due</label><input class="form-control-custom"
-                            id="newCustomerDue" type="number" value="0"></div>
-                    <div class="full"><label class="form-label-custom">Address</label><input class="form-control-custom"
-                            id="newCustomerAddress" placeholder="Customer address"></div>
+                    <div><label class="form-label-custom">Customer Name *</label><input class="form-control-custom" id="newCustomerName" placeholder="Enter customer name"></div>
+                    <div><label class="form-label-custom">Mobile Number *</label><input class="form-control-custom" id="newCustomerMobile" placeholder="01XXXXXXXXX"></div>
+                    <div><label class="form-label-custom">Email</label><input class="form-control-custom" id="newCustomerEmail" type="email" placeholder="customer@email.com"></div>
+                    <div><label class="form-label-custom">Opening Due</label><input class="form-control-custom" id="newCustomerDue" type="number" value="0"></div>
+                    <div class="full"><label class="form-label-custom">Address</label><input class="form-control-custom" id="newCustomerAddress" placeholder="Customer address"></div>
                 </div>
-                <div class="modal-footer-custom"><button class="btn btn-outline-secondary btn-sm"
-                        onclick="closeModal('customerModal')">Cancel</button><button class="complete"
-                        style="width:auto;padding:0 20px" onclick="saveCustomer()"><i
-                            class="fa-solid fa-check me-1"></i> Save Customer</button></div>
+                <div class="modal-footer-custom">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="closeModal('customerModal')">Cancel</button>
+                    <button class="complete" style="width:auto;padding:0 20px" onclick="saveCustomer()"><i class="fa-solid fa-check me-1"></i> Save Customer</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1484,39 +982,33 @@
     <div class="modal-backdrop-custom" id="paymentModal">
         <div class="modal-box">
             <div class="modal-head">
-                <div class="modal-title"><i class="fa-solid fa-money-bill-transfer me-2"
-                        style="color:var(--primary)"></i>Payment Received</div>
-                <button class="modal-close" onclick="closeModal('paymentModal')"><i
-                        class="fa-solid fa-xmark"></i></button>
+                <div class="modal-title"><i class="fa-solid fa-money-bill-transfer me-2" style="color:var(--primary)"></i>Payment Received</div>
+                <button class="modal-close" onclick="closeModal('paymentModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
-                <div
-                    style="display:flex;justify-content:space-between;background:var(--soft);padding:13px;border-radius:10px;margin-bottom:16px">
-                    <span style="font-size:11px;color:var(--muted)">Total Payable</span><strong id="modalPayable"
-                        style="color:var(--primary);font-size:18px">৳ 0</strong>
+                <div style="display:flex;justify-content:space-between;background:var(--soft);padding:13px;border-radius:10px;margin-bottom:16px">
+                    <span style="font-size:11px;color:var(--muted)">Total Payable</span><strong id="modalPayable" style="color:var(--primary);font-size:18px">৳ 0</strong>
                 </div>
                 <label class="form-label-custom">Payment Breakdown</label>
                 <div id="paymentRows"></div>
-                <button class="btn btn-sm btn-outline-success w-100" onclick="addPaymentRow()"><i
-                        class="fa-solid fa-plus me-1"></i> Add Payment Method</button>
+                <button class="btn btn-sm btn-outline-success w-100" onclick="addPaymentRow()"><i class="fa-solid fa-plus me-1"></i> Add Payment Method</button>
+                
                 <div class="payment-summary">
-                    <div class="payment-summary-row"><span>Total Received</span><strong id="receivedAmount">৳ 0</strong>
-                    </div>
-                    <div class="payment-summary-row"><span>Remaining Due</span><strong id="remainingAmount">৳ 0</strong>
-                    </div>
+                    <div class="payment-summary-row"><span>Total Received</span><strong id="receivedAmount">৳ 0</strong></div>
+                    <div class="payment-summary-row"><span>Remaining Due</span><strong id="remainingAmount">৳ 0</strong></div>
                     <div class="payment-summary-row"><span>Change</span><strong id="changeAmount">৳ 0</strong></div>
-                    <div class="payment-summary-row total"><span>Payment Status</span><strong
-                            id="paymentStatus">Due</strong></div>
+                    <div class="payment-summary-row total"><span>Payment Status</span><strong id="paymentStatus">Due</strong></div>
                 </div>
-                <div class="modal-footer-custom"><button class="btn btn-outline-secondary btn-sm"
-                        onclick="closeModal('paymentModal')">Cancel</button><button class="complete"
-                        style="width:auto;padding:0 20px" onclick="confirmPayment()"><i
-                            class="fa-solid fa-check me-1"></i> Confirm Payment</button></div>
+                
+                <div class="modal-footer-custom">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="closeModal('paymentModal')">Cancel</button>
+                    <button class="complete" style="width:auto;padding:0 20px" onclick="confirmPayment()"><i class="fa-solid fa-check me-1"></i> Confirm Payment</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast-container-custom" id="toastContainer"></div>
 
     <script>
         const products = [
@@ -1573,16 +1065,16 @@
         ];
 
         let cart = [];
-        let payment = 'Cash';
+        let payment = 'Cash'; 
         let activeCategory = 'All Products';
         let holdSales = JSON.parse(localStorage.getItem('takahata_hold_sales')) || [];
 
         const productsEl = document.getElementById('products');
         const searchInput = document.getElementById('search');
-        const LOW_STOCK_THRESHOLD = 5;
+        const LOW_STOCK_THRESHOLD = 5; 
 
         function money(n) {return '৳ ' + Number(n).toLocaleString('en-BD');}
-
+        
         function renderProducts(list = products) {
             productsEl.innerHTML = list.map(p => `
             <div class="product" onclick="addProduct('${p.barcode}')">
@@ -1591,7 +1083,7 @@
                 <div class="product-meta">Stock: ${p.stock} units · ${p.barcode}</div>
                 <div class="product-price">${money(p.price)}</div>
             </div>
-        `).join('');
+            `).join('');
         }
 
         function renderCart() {
@@ -1612,11 +1104,11 @@
                     </div>
                     <button class="remove" onclick="removeItem(${i})"><i class="fa-solid fa-trash"></i></button>
                 </div>
-            `).join('');
+                `).join('');
             }
             updateTotal();
         }
-
+        
         function addProduct(barcode) {
             const p = products.find(x => x.barcode === barcode);
             if (!p) return;
@@ -1658,14 +1150,14 @@
         function updateTotal() {
             let sub = cart.reduce((a, p) => a + p.price * p.qty, 0);
             let dis = Number(document.getElementById('discount').value) || 0;
-            let shipping = Number(document.getElementById('shipping').value) || 0;
+            let shippingAndService = Number(document.getElementById('shipping').value) || 0; 
             let tax = Math.round(sub * .05);
-            let total = Math.max(0, sub + tax + shipping - dis);
+            let total = Math.max(0, sub + tax + shippingAndService - dis);
+            
             document.getElementById('subtotal').textContent = money(sub);
             document.getElementById('tax').textContent = money(tax);
             document.getElementById('total').textContent = money(total);
-
-            document.getElementById('shippingAddressRow').style.display = shipping > 0 ? 'flex' : 'none';
+            document.getElementById('shippingAddressRow').style.display = shippingAndService > 0 ? 'flex' : 'none';
         }
 
         function generateInvoiceId() {
@@ -1687,12 +1179,35 @@
             showToast('Sale reset');
         }
 
+        // [UPDATED] Multi Live Animated Toast Logic
         function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            clearTimeout(window.tt);
-            window.tt = setTimeout(() => t.classList.remove('show'), 2200);
+            const container = document.getElementById('toastContainer');
+            
+            // Create a new toast element
+            const toastEl = document.createElement('div');
+            toastEl.className = 'toast-msg';
+            
+            // Checking if msg has an error emoji to change icon color, otherwise default to primary
+            let iconClass = 'fa-circle-check';
+            let iconColor = 'var(--primary)';
+            if(msg.includes('⚠️')) {
+                iconClass = 'fa-triangle-exclamation';
+                iconColor = '#f59e0b';
+                msg = msg.replace('⚠️', ''); // Clean the string
+            }
+
+            toastEl.innerHTML = `<i class="fa-solid ${iconClass}" style="color:${iconColor}"></i> <span>${msg}</span>`;
+            
+            // Add to container
+            container.appendChild(toastEl);
+            
+            // Automatically remove after 3 seconds
+            setTimeout(() => {
+                toastEl.classList.add('hide'); // trigger fade out animation
+                setTimeout(() => {
+                    toastEl.remove(); // remove from DOM after animation completes
+                }, 300);
+            }, 3000);
         }
 
         document.getElementById('discount').addEventListener('input', updateTotal);
@@ -1721,7 +1236,6 @@
 
         searchInput.addEventListener('input', filterProducts);
 
-        /* ====== HOLD SALE LOGIC ====== */
         function updateHoldBadge() {
             document.getElementById('holdBadge').textContent = holdSales.length;
         }
@@ -1806,21 +1320,21 @@
             container.innerHTML = filtered.map((h) => {
                 const originalIndex = holdSales.findIndex(item => item.id === h.id);
                 return `
-            <div class="hold-item">
-                <div class="hold-info">
-                    <div class="hold-title">${h.customerName} <span style="font-weight:normal;color:var(--muted);font-size:11px;">( <i class="fa-solid fa-phone me-1"></i>${h.customerPhone || 'N/A'} )</span> - <span style="color:var(--primary)">${money(h.total)}</span></div>
-                    <div class="hold-meta">
-                        <i class="fa-regular fa-clock me-1"></i>${h.date} ${h.holdTime ? 'at ' + h.holdTime : ''} &nbsp;|&nbsp; 
-                        <strong>${h.invoice}</strong> &nbsp;|&nbsp; 
-                        Items: ${h.cart.reduce((a, b) => a + b.qty, 0)}
+                <div class="hold-item">
+                    <div class="hold-info">
+                        <div class="hold-title">${h.customerName} <span style="font-weight:normal;color:var(--muted);font-size:11px;">( <i class="fa-solid fa-phone me-1"></i>${h.customerPhone || 'N/A'} )</span> - <span style="color:var(--primary)">${money(h.total)}</span></div>
+                        <div class="hold-meta">
+                            <i class="fa-regular fa-clock me-1"></i>${h.date} ${h.holdTime ? 'at ' + h.holdTime : ''} &nbsp;|&nbsp; 
+                            <strong>${h.invoice}</strong> &nbsp;|&nbsp; 
+                            Items: ${h.cart.reduce((a, b) => a + b.qty, 0)}
+                        </div>
+                    </div>
+                    <div class="hold-actions">
+                        <button class="btn-resume" onclick="resumeHold(${originalIndex})" title="Resume Sale"><i class="fa-solid fa-play"></i></button>
+                        <button class="btn-delete" onclick="deleteHold(${originalIndex})" title="Delete Hold"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
-                <div class="hold-actions">
-                    <button class="btn-resume" onclick="resumeHold(${originalIndex})" title="Resume Sale"><i class="fa-solid fa-play"></i></button>
-                    <button class="btn-delete" onclick="deleteHold(${originalIndex})" title="Delete Hold"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-            `;
+                `;
             }).join('');
         }
 
@@ -1855,8 +1369,7 @@
             updateHoldBadge();
             showToast('Hold sale deleted');
         }
-        /* ============================ */
-
+        
         const customerSearch = document.getElementById('customerSearch');
         const customerSelect = document.getElementById('customer');
         const customerResults = document.getElementById('customerResults');
@@ -1883,7 +1396,6 @@
             {name: 'City Super Shop', phone: '01877777777'}
         ];
 
-
         function renderCustomerResults(query = '') {
             const q = query.trim().toLowerCase();
             const list = customers.filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.toLowerCase().includes(q));
@@ -1891,13 +1403,13 @@
                 customerResults.innerHTML = '<div class="customer-result-empty">No customer found</div>';
             } else {
                 customerResults.innerHTML = list.map((c, i) => `
-            <div class="customer-result" onclick="selectCustomer(${i}, '${q.replace(/'/g, "\\'")}')">
-                <div class="customer-avatar">${c.name.split(' ').map(x => x[0]).slice(0, 2).join('')}</div>
-                <div class="customer-result-info">
-                    <div class="customer-result-name">${c.name}</div>
-                    <div class="customer-result-phone"><i class="fa-solid fa-phone me-1"></i>${c.phone}</div>
-                </div>
-            </div>`).join('');
+                <div class="customer-result" onclick="selectCustomer(${i}, '${q.replace(/'/g, "\\'")}')">
+                    <div class="customer-avatar">${c.name.split(' ').map(x => x[0]).slice(0, 2).join('')}</div>
+                    <div class="customer-result-info">
+                        <div class="customer-result-name">${c.name}</div>
+                        <div class="customer-result-phone"><i class="fa-solid fa-phone me-1"></i>${c.phone}</div>
+                    </div>
+                </div>`).join('');
             }
             customerResults.classList.add('show');
         }
@@ -1945,7 +1457,7 @@
         function closeModal(id) {document.getElementById(id).classList.remove('show');}
 
         function openPaymentModal() {
-            if (!cart.length) return showToast('Please add products first');
+            if (!cart.length) return showToast('⚠️ Please add products first');
             document.getElementById('modalPayable').textContent = money(getPayable());
             payments = [{method: 'Cash', amount: getPayable()}];
             renderPaymentRows();
@@ -1957,17 +1469,17 @@
 
         function renderPaymentRows() {
             document.getElementById('paymentRows').innerHTML = payments.map((p, i) => `
-        <div class="payment-line">
-            <select onchange="payments[${i}].method=this.value">
-                <option ${p.method === 'Cash' ? 'selected' : ''}>Cash</option>
-                <option ${p.method === 'bKash' ? 'selected' : ''}>bKash</option>
-                <option ${p.method === 'Nagad' ? 'selected' : ''}>Nagad</option>
-                <option ${p.method === 'Card' ? 'selected' : ''}>Card</option>
-                <option ${p.method === 'Bank' ? 'selected' : ''}>Bank</option>
-            </select>
-            <input type="number" min="0" value="${p.amount}" oninput="payments[${i}].amount=Number(this.value)||0;updatePaymentSummary()">
-            <button class="remove-payment" onclick="removePaymentRow(${i})"><i class="fa-solid fa-trash"></i></button>
-        </div>`).join('');
+            <div class="payment-line">
+                <select onchange="payments[${i}].method=this.value">
+                    <option ${p.method === 'Cash' ? 'selected' : ''}>Cash</option>
+                    <option ${p.method === 'bKash' ? 'selected' : ''}>bKash</option>
+                    <option ${p.method === 'Nagad' ? 'selected' : ''}>Nagad</option>
+                    <option ${p.method === 'Card' ? 'selected' : ''}>Card</option>
+                    <option ${p.method === 'Bank' ? 'selected' : ''}>Bank</option>
+                </select>
+                <input type="number" min="0" value="${p.amount}" oninput="payments[${i}].amount=Number(this.value)||0;updatePaymentSummary()">
+                <button class="remove-payment" onclick="removePaymentRow(${i})"><i class="fa-solid fa-trash"></i></button>
+            </div>`).join('');
             updatePaymentSummary();
         }
 
@@ -1986,7 +1498,7 @@
         function saveCustomer() {
             let name = document.getElementById('newCustomerName').value.trim(),
                 mobile = document.getElementById('newCustomerMobile').value.trim();
-            if (!name || !mobile) return showToast('Customer name and mobile are required');
+            if (!name || !mobile) return showToast('⚠️ Customer name and mobile are required');
             let select = document.getElementById('customer'),
                 option = document.createElement('option');
             option.textContent = name + ' - ' + mobile;
@@ -2014,17 +1526,25 @@
         };
         overlay.onclick = () => {sidebar.classList.remove('mobile-show'); overlay.classList.remove('show');};
 
+        // [UPDATED] Dropdown Menu Logic (Added toggle functionality for smooth CSS animation)
         document.querySelectorAll('.dropdown-toggle-btn').forEach(btn => {
             btn.onclick = () => {
                 const currentParent = btn.parentElement;
                 const currentSubmenu = currentParent.querySelector('.submenu');
                 const isOpen = currentSubmenu.classList.contains('show');
+                
+                // Close other open menus
                 document.querySelectorAll('.dropdown-menu-item').forEach(item => {
                     item.classList.remove('open');
                     const submenu = item.querySelector('.submenu');
                     if (submenu) submenu.classList.remove('show');
                 });
-                if (!isOpen) {currentSubmenu.classList.add('show'); currentParent.classList.add('open');}
+                
+                // Open clicked menu if it was not already open
+                if (!isOpen) {
+                    currentSubmenu.classList.add('show'); 
+                    currentParent.classList.add('open');
+                }
             };
         });
 
@@ -2048,17 +1568,16 @@
         function confirmPayment() {
             let payable = getPayable();
             let received = payments.reduce((a, p) => a + (Number(p.amount) || 0), 0);
-            if (received <= 0) {showToast("Enter received amount"); return;}
+            if (received <= 0) {showToast("⚠️ Enter received amount"); return;}
 
             let subtotal = cart.reduce((a, p) => a + (p.price * p.qty), 0);
             let discount = Number(document.getElementById("discount").value) || 0;
-            let shipping = Number(document.getElementById("shipping").value) || 0;
+            let shippingAndService = Number(document.getElementById("shipping").value) || 0; 
             let shippingAddress = document.getElementById("shippingAddress").value;
             let tax = Math.round(subtotal * 0.05);
             let due = Math.max(0, payable - received);
             let change = Math.max(0, received - payable);
 
-            // কাস্টমারের ফোন নম্বর বের করা হচ্ছে
             const customerSearchInput = document.getElementById('customerSearch').value;
             let customerName = document.getElementById("customer").value;
             let customerPhone = 'N/A';
@@ -2070,7 +1589,6 @@
                 if (foundCust) customerPhone = foundCust.phone;
             }
 
-            // পেমেন্টের সময় বের করা হচ্ছে
             const now = new Date();
             const paymentTime = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
@@ -2079,29 +1597,45 @@
                 if (prod) prod.stock -= item.qty;
             });
 
-            // JSON Data Update
             const saleJson = {
                 invoice_no: document.getElementById("invoice").textContent,
                 invoice_date: now.toLocaleString(),
-                payment_time: paymentTime, // নতুন যুক্ত করা হয়েছে 
+                payment_time: paymentTime,
                 customer: {
                     name: customerName,
-                    phone: customerPhone // নতুন যুক্ত করা হয়েছে 
+                    phone: customerPhone
                 },
-                summary: {subtotal: subtotal, discount: discount, tax: tax, shipping: shipping, shipping_address: shippingAddress, total_payable: payable, total_received: received, due: due, change: change, payment_status: due > 0 ? "Due" : "Paid"},
-                products: cart.map(item => ({name: item.name, barcode: item.barcode, category: item.category, unit_price: item.price, quantity: item.qty, line_total: item.price * item.qty})),
+                summary: {
+                    subtotal: subtotal, 
+                    discount: discount, 
+                    tax: tax, 
+                    shipping_and_service: shippingAndService,
+                    shipping_address: shippingAddress, 
+                    total_payable: payable, 
+                    total_received: received, 
+                    due: due, 
+                    change: change, 
+                    payment_status: due > 0 ? "Due" : "Paid"
+                },
+                products: cart.map(item => ({
+                    name: item.name, 
+                    barcode: item.barcode, 
+                    category: item.category, 
+                    unit_price: item.price, 
+                    quantity: item.qty, 
+                    line_total: item.price * item.qty
+                })),
                 payment_received: payments.map(pay => ({method: pay.method, amount: pay.amount}))
             };
 
-            console.log(saleJson);
+            console.log("FINAL SALE DATA JSON:", saleJson);
 
             closeModal("paymentModal");
-            showToast("Payment Completed");
+            showToast("Payment Completed Successfully!");
             clearCart();
             renderProducts();
         }
 
-        /* ====== CALCULATOR FUNCTIONS & DRAG LOGIC ====== */
         function toggleCalculator() {
             const calc = document.getElementById('drag-calculator');
             calc.style.display = calc.style.display === 'none' ? 'flex' : 'none';
@@ -2127,21 +1661,11 @@
             const display = document.getElementById('calc-display');
             try {
                 let expr = display.value;
-
-                // Percentage Addition/Subtraction logic (e.g., 1000 - 10% = 900)
-                expr = expr.replace(/([\d.]+)\s*([+-])\s*([\d.]+)%/g, function (match, p1, p2, p3) {
-                    return p1 + p2 + '(' + p1 + ' * ' + p3 + ' / 100)';
-                });
-
-                // Standard Percentage Logic (e.g., 500 * 5%)
+                expr = expr.replace(/([\d.]+)\s*([+-])\s*([\d.]+)%/g, function (match, p1, p2, p3) { return p1 + p2 + '(' + p1 + ' * ' + p3 + ' / 100)'; });
                 expr = expr.replace(/%/g, '/100');
-
-                // Symbol cleanup
                 expr = expr.replace(/×/g, '*').replace(/÷/g, '/');
-
                 let result = eval(expr);
-                result = Math.round(result * 100000000) / 100000000; // Handling float precision
-
+                result = Math.round(result * 100000000) / 100000000;
                 display.value = result;
             } catch (e) {
                 display.value = 'Error';
@@ -2149,7 +1673,6 @@
             }
         }
 
-        // Drag & Drop Functionality
         const calcEl = document.getElementById('drag-calculator');
         const calcHeader = document.getElementById('calc-header');
         let isDraggingCalc = false, calcStartX, calcStartY, calcInitialLeft, calcInitialTop;
@@ -2168,22 +1691,17 @@
             if (!isDraggingCalc) return;
             const dx = e.clientX - calcStartX;
             const dy = e.clientY - calcStartY;
-
             calcEl.style.left = `${calcInitialLeft + dx}px`;
             calcEl.style.top = `${calcInitialTop + dy}px`;
             calcEl.style.right = 'auto';
         });
 
-        document.addEventListener('mouseup', () => {
-            isDraggingCalc = false;
-        });
+        document.addEventListener('mouseup', () => { isDraggingCalc = false; });
 
-        // Initialization
         updateHoldBadge();
         document.getElementById('invoice').textContent = generateInvoiceId();
         renderProducts();
         renderCart();
     </script>
 </body>
-
 </html>
