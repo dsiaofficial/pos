@@ -49,7 +49,7 @@
         }
 
         /* =========================================
-           SIDEBAR STYLES (Fixed Header added)
+           SIDEBAR STYLES (Fixed Header added & Jumping fixed)
            ========================================= */
         .sidebar {
             position: fixed;
@@ -58,9 +58,26 @@
             background: var(--card);
             border-right: 1px solid var(--border);
             z-index: 1000;
-            transition: .25s;
-            overflow: auto
+            /* Updated Transition for Smooth Collapse */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            overflow-x: hidden; /* Prevents jumping */
+            white-space: nowrap; /* Prevents text wrap during transition */
         }
+        
+
+
+
+   /* =========================================
+           CUSTOM PROFESSIONAL SCROLLBAR
+           ========================================= */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; border: 2px solid transparent; background-clip: padding-box; }
+        
+        body.dark ::-webkit-scrollbar-thumb { background: #475569; }
+        body.dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
         .sidebar.collapsed { width: 78px }
 
@@ -75,7 +92,8 @@
             align-items: center;
             gap: 12px;
             padding: 0 20px;
-            border-bottom: 1px solid var(--border)
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
         }
 
         .brand-logo {
@@ -86,7 +104,8 @@
             color: #fff;
             display: grid;
             place-items: center;
-            font-size: 19px
+            font-size: 19px;
+            flex-shrink: 0;
         }
 
         .brand-title { font-size: 16px; font-weight: 800 }
@@ -96,7 +115,10 @@
         .sidebar.collapsed .menu-label,
         .sidebar.collapsed .menu-text,
         .sidebar.collapsed .arrow,
-        .sidebar.collapsed .badge-count { display: none }
+        .sidebar.collapsed .badge-count { 
+            display: none;
+            opacity: 0;
+        }
 
         .sidebar.collapsed .brand { padding: 0 19px }
 
@@ -105,7 +127,8 @@
             font-weight: 700;
             color: var(--muted);
             letter-spacing: 1px;
-            padding: 22px 20px 9px
+            padding: 22px 20px 9px;
+            white-space: nowrap;
         }
 
         .menu-item { margin: 3px 10px }
@@ -124,14 +147,15 @@
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
-            cursor: pointer
+            cursor: pointer;
+            white-space: nowrap;
         }
 
         .menu-link:hover,
         .menu-link.active { background: var(--soft); color: var(--primary) }
 
-        .menu-icon { width: 22px; text-align: center; font-size: 15px }
-        .menu-text { flex: 1; text-align: left }
+        .menu-icon { width: 22px; text-align: center; font-size: 15px; flex-shrink: 0; }
+        .menu-text { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; }
         
         /* [UPDATED] Arrow Animation for dropdown */
         .arrow { font-size: 10px; transition: transform 0.3s ease; }
@@ -144,6 +168,7 @@
             padding: 0 0 0 44px; 
             opacity: 0;
             transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            white-space: nowrap;
         }
         .submenu.show { 
             max-height: 350px; 
@@ -165,7 +190,12 @@
         /* =========================================
            MAIN LAYOUT & TOPBAR
            ========================================= */
-        .main { margin-left: 260px; min-height: 100vh; transition: .25s }
+        .main { 
+            margin-left: 260px; 
+            min-height: 100vh; 
+            /* Updated Transition specifically for margin */
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
         .sidebar.collapsed~.main { margin-left: 78px }
 
         .topbar {
@@ -274,38 +304,109 @@
         }
         .category.active, .category:hover { background: var(--primary); border-color: var(--primary); color: #fff }
 
-        /* Products Grid */
+        /* =========================================
+           [UPDATED] PROFESSIONAL PRODUCTS GRID
+           ========================================= */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(4, minmax(0, 1fr)); 
+            gap: 14px;
             max-height: 437px;
             overflow: auto;
             padding: 11px 0;
+            align-content: start;
         }
 
         .product {
             border: 1px solid var(--border);
-            border-radius: 11px;
-            padding: 13px;
+            border-radius: 12px;
+            padding: 14px;
             background: var(--card);
             cursor: pointer;
-            transition: .2s
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 100%; 
         }
-        .product:hover { border-color: var(--primary); transform: translateY(-2px) }
+        
+        .product:hover { 
+            border-color: var(--primary); 
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
 
         .product-icon {
-            height: 80px;
-            border-radius: 9px;
+            height: 70px;
+            border-radius: 10px;
             display: grid;
             place-items: center;
             color: var(--primary);
-            font-size: 29px;
-            margin-bottom: 10px
+            font-size: 26px;
+            margin-bottom: 12px;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
         }
-        .product-name { font-size: 11px; font-weight: 700; line-height: 1.4; color: var(--text); }
-        .product-meta { font-size: 10px; color: var(--muted); margin-top: 4px }
-        .product-price { font-size: 13px; font-weight: 800; color: var(--primary); margin-top: 7px }
+        
+        .product:hover .product-icon {
+            transform: scale(1.05);
+        }
+
+        .product-name { 
+            font-size: 11px; 
+            font-weight: 700; 
+            line-height: 1.5; 
+            color: var(--text); 
+            margin-bottom: 8px;
+            height: 33px; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-meta { 
+            font-size: 10px; 
+            color: var(--muted); 
+            margin-top: auto; 
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column; 
+            gap: 5px;
+            align-items: flex-start;
+        }
+        
+        .product-stock-badge {
+            background: var(--bg);
+            padding: 4px 7px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 9px;
+            letter-spacing: 0.3px;
+        }
+
+        .product-barcode {
+            font-size: 9px;
+            color: var(--muted);
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .product-price { 
+            font-size: 13px; 
+            font-weight: 800; 
+            color: var(--primary); 
+            background: var(--soft);
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 8px;
+            align-self: flex-start;
+            margin-top: auto;
+        }
 
         /* Sale Panel */
         .sale-panel { position: sticky; top: 94px }
@@ -399,10 +500,11 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            z-index: 9999; /* Ensure it stays on top */
+            z-index: 9999;
         }
 
         .toast-msg {
+            position: relative;
             background: var(--card);
             border: 1px solid var(--border);
             padding: 13px 18px;
@@ -418,6 +520,7 @@
             opacity: 0;
             transform: translateX(100%);
             min-width: 250px;
+            overflow: hidden;
         }
 
         .toast-msg i {
@@ -428,6 +531,15 @@
         .toast-msg.hide {
             animation: fadeOutToast 0.3s ease forwards;
         }
+        
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary);
+            animation: toastProgressAnim 3s linear forwards;
+        }
 
         @keyframes slideInToast {
             to { opacity: 1; transform: translateX(0); }
@@ -436,16 +548,21 @@
         @keyframes fadeOutToast {
             to { opacity: 0; transform: translateX(100%); margin-bottom: -50px; }
         }
+        
+        @keyframes toastProgressAnim {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
 
         /* =========================================
            RESPONSIVE STYLES
            ========================================= */
-        @media(max-width:1200px) { .product-grid { grid-template-columns: repeat(3, 1fr) } }
+        @media(max-width:1200px) { .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
 
         @media(max-width:900px) {
             .sidebar { transform: translateX(-100%); width: 260px }
             .sidebar.mobile-show { transform: translateX(0) }
-            .main, .sidebar.collapsed~.main { margin-left: 0 }
+            .main, .sidebar.collapsed~.main { margin-left: 0; transition: transform 0.3s ease; }
             .topbar { padding: 0 16px }
             .search-wrap, .profile-info { display: none }
             .pos-layout { display: flex; flex-direction: column; }
@@ -455,7 +572,7 @@
         @media(max-width:600px) {
             .content { padding: 15px }
             .page-head { align-items: flex-start; gap: 12px; flex-direction: column }
-            .product-grid { grid-template-columns: repeat(2, 1fr) }
+            .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) }
             .card { padding: 14px }
             .card-head { align-items: flex-start; gap: 10px; flex-wrap: wrap; width: 100% }
             .card-head .search { width: 220px }
@@ -713,7 +830,9 @@
 
         .calc-header:active { cursor: grabbing; }
         .calc-header button { border: 0; background: transparent; color: #fff; cursor: pointer; font-size: 15px; }
-        .calc-screen { padding: 15px; background: var(--bg); border-bottom: 1px solid var(--border); }
+        .calc-screen { padding: 12px 15px; background: var(--bg); border-bottom: 1px solid var(--border); }
+        
+        /* [UPDATED] Live preview calc screen styling */
         .calc-screen input {
             width: 100%;
             border: 0;
@@ -916,7 +1035,10 @@
             <span><i class="fa-solid fa-calculator me-1"></i> Calculator</span>
             <button onclick="toggleCalculator()"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="calc-screen"><input type="text" id="calc-display" disabled value="0"></div>
+        <div class="calc-screen">
+            <div id="calc-preview" style="height:15px; font-size:12px; color:var(--muted); text-align:right; margin-bottom:4px; font-weight:600;"></div>
+            <input type="text" id="calc-display" disabled value="0">
+        </div>
         <div class="calc-buttons">
             <button onclick="calcClear()" style="color: var(--danger)">C</button>
             <button onclick="calcDel()" style="color: #f59e0b">DEL</button>
@@ -1075,12 +1197,16 @@
 
         function money(n) {return '৳ ' + Number(n).toLocaleString('en-BD');}
         
+        // [UPDATED] Render Products Professional List View (Stacked Column Layout & Icons)
         function renderProducts(list = products) {
             productsEl.innerHTML = list.map(p => `
             <div class="product" onclick="addProduct('${p.barcode}')">
                 <div class="product-icon"><i class="fa-solid ${p.icon}"></i></div>
-                <div class="product-name">${p.name}</div>
-                <div class="product-meta">Stock: ${p.stock} units · ${p.barcode}</div>
+                <div class="product-name" title="${p.name}">${p.name}</div>
+                <div class="product-meta">
+                    <span class="product-stock-badge" style="color: ${p.stock <= LOW_STOCK_THRESHOLD ? 'var(--danger)' : 'var(--text)'};">Stock: ${p.stock}</span>
+                    <span class="product-barcode"><i class="fa-solid fa-barcode me-1"></i>${p.barcode}</span>
+                </div>
                 <div class="product-price">${money(p.price)}</div>
             </div>
             `).join('');
@@ -1179,33 +1305,34 @@
             showToast('Sale reset');
         }
 
-        // [UPDATED] Multi Live Animated Toast Logic
+        // [UPDATED] Multi Live Animated Toast Logic With Progress Bar Added
         function showToast(msg) {
             const container = document.getElementById('toastContainer');
             
-            // Create a new toast element
             const toastEl = document.createElement('div');
             toastEl.className = 'toast-msg';
             
-            // Checking if msg has an error emoji to change icon color, otherwise default to primary
             let iconClass = 'fa-circle-check';
             let iconColor = 'var(--primary)';
             if(msg.includes('⚠️')) {
                 iconClass = 'fa-triangle-exclamation';
                 iconColor = '#f59e0b';
-                msg = msg.replace('⚠️', ''); // Clean the string
+                msg = msg.replace('⚠️', ''); 
             }
 
-            toastEl.innerHTML = `<i class="fa-solid ${iconClass}" style="color:${iconColor}"></i> <span>${msg}</span>`;
+            // Added the .toast-progress inner div directly here
+            toastEl.innerHTML = `
+                <i class="fa-solid ${iconClass}" style="color:${iconColor}"></i> 
+                <span style="flex:1">${msg}</span>
+                <div class="toast-progress" style="background:${iconColor}"></div>
+            `;
             
-            // Add to container
             container.appendChild(toastEl);
             
-            // Automatically remove after 3 seconds
             setTimeout(() => {
-                toastEl.classList.add('hide'); // trigger fade out animation
+                toastEl.classList.add('hide'); 
                 setTimeout(() => {
-                    toastEl.remove(); // remove from DOM after animation completes
+                    toastEl.remove(); 
                 }, 300);
             }, 3000);
         }
@@ -1526,21 +1653,18 @@
         };
         overlay.onclick = () => {sidebar.classList.remove('mobile-show'); overlay.classList.remove('show');};
 
-        // [UPDATED] Dropdown Menu Logic (Added toggle functionality for smooth CSS animation)
         document.querySelectorAll('.dropdown-toggle-btn').forEach(btn => {
             btn.onclick = () => {
                 const currentParent = btn.parentElement;
                 const currentSubmenu = currentParent.querySelector('.submenu');
                 const isOpen = currentSubmenu.classList.contains('show');
                 
-                // Close other open menus
                 document.querySelectorAll('.dropdown-menu-item').forEach(item => {
                     item.classList.remove('open');
                     const submenu = item.querySelector('.submenu');
                     if (submenu) submenu.classList.remove('show');
                 });
                 
-                // Open clicked menu if it was not already open
                 if (!isOpen) {
                     currentSubmenu.classList.add('show'); 
                     currentParent.classList.add('open');
@@ -1636,6 +1760,39 @@
             renderProducts();
         }
 
+        // [UPDATED] Calculator Logic specific to instant Live Preview
+        function updateLiveCalc() {
+            const display = document.getElementById('calc-display');
+            const preview = document.getElementById('calc-preview');
+            try {
+                let expr = display.value;
+                if (!expr || expr === '0') {
+                    preview.textContent = ''; 
+                    return;
+                }
+                
+                // Allow safe calculation of partial expressions
+                expr = expr.replace(/([\d.]+)\s*([+-])\s*([\d.]+)%/g, function (match, p1, p2, p3) { return p1 + p2 + '(' + p1 + ' * ' + p3 + ' / 100)'; });
+                expr = expr.replace(/%/g, '/100');
+                expr = expr.replace(/×/g, '*').replace(/÷/g, '/');
+                
+                // Don't error out on dangling operators by ignoring eval fails silently
+                if (/[+\-*\/]$/.test(expr)) return; 
+                
+                let result = eval(expr);
+                
+                // Only show live preview if the result differs from the typed number
+                if (result !== undefined && !isNaN(result) && result.toString() !== display.value) {
+                    result = Math.round(result * 100000000) / 100000000;
+                    preview.textContent = "= " + result;
+                } else {
+                    preview.textContent = '';
+                }
+            } catch (e) {
+                preview.textContent = ''; // Fail silently while typing
+            }
+        }
+
         function toggleCalculator() {
             const calc = document.getElementById('drag-calculator');
             calc.style.display = calc.style.display === 'none' ? 'flex' : 'none';
@@ -1648,17 +1805,23 @@
             } else {
                 display.value += val;
             }
+            updateLiveCalc();
         }
 
-        function calcClear() {document.getElementById('calc-display').value = '0';}
+        function calcClear() {
+            document.getElementById('calc-display').value = '0';
+            updateLiveCalc();
+        }
 
         function calcDel() {
             const display = document.getElementById('calc-display');
             display.value = display.value.slice(0, -1) || '0';
+            updateLiveCalc();
         }
 
         function calcResult() {
             const display = document.getElementById('calc-display');
+            const preview = document.getElementById('calc-preview');
             try {
                 let expr = display.value;
                 expr = expr.replace(/([\d.]+)\s*([+-])\s*([\d.]+)%/g, function (match, p1, p2, p3) { return p1 + p2 + '(' + p1 + ' * ' + p3 + ' / 100)'; });
@@ -1667,6 +1830,7 @@
                 let result = eval(expr);
                 result = Math.round(result * 100000000) / 100000000;
                 display.value = result;
+                preview.textContent = ''; // clear preview once finalized
             } catch (e) {
                 display.value = 'Error';
                 setTimeout(calcClear, 1000);
