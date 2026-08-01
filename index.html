@@ -2180,6 +2180,10 @@
                     ? `<span style="background:#f59e0b; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; margin-left: 5px;">HOLD</span>`
                     : `<span style="background:#3b82f6; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; margin-left: 5px;">QUOTE</span>`;
 
+                // Calculate Item Count and Total Quantity
+                const itemCount = h.cart ? h.cart.length : 0;
+                const totalQty = h.cart ? h.cart.reduce((sum, item) => sum + item.qty, 0) : 0;
+
                 return `
                 <div class="hold-item">
                     <div class="hold-info">
@@ -2187,7 +2191,9 @@
                         <div class="hold-meta">
                             <i class="fa-regular fa-clock me-1"></i>${h.date} ${h._time ? 'at ' + h._time : ''} &nbsp;|&nbsp; 
                             ${isHold ? 'Inv:' : 'Quote:'} <strong>${h._id}</strong> &nbsp;|&nbsp;
-                            <span style="color:${h.saleMode === 'wholesale' ? '#d97706' : 'var(--primary)'}">${h.saleMode ? h.saleMode.toUpperCase() : 'RETAIL'}</span>
+                            <span style="color:${h.saleMode === 'wholesale' ? '#d97706' : 'var(--primary)'}">${h.saleMode ? h.saleMode.toUpperCase() : 'RETAIL'}</span> &nbsp;|&nbsp;
+                            Items: <strong>${itemCount}</strong> &nbsp;|&nbsp; 
+                            Qty: <strong>${totalQty}</strong>
                         </div>
                     </div>
                     <div class="hold-actions">
@@ -2198,7 +2204,6 @@
                 </div>`;
             }).join('');
         }
-
         // ==========================================
         // MOBILE-FRIENDLY PRINT HELPER (FIXED)
         // ==========================================
@@ -2238,159 +2243,199 @@
         }
 
         // --- UPDATED PROFESSIONAL QUOTATION PRINT TEMPLATE ---
+        /**
+   * Generates and prints a combined quotation/estimate document.
+   * @param {string} type - The type of sale ('hold' or standard).
+   * @param {number} index - The index of the item in the respective array.
+   */
         function printCombinedItem(type, index) {
-            const isHold = type === 'hold';
-            const sourceItem = isHold ? holdSales[index] : quotations[index];
+            try {
+                const isHold = type === 'hold';
+                const sourceItem = isHold ? holdSales[index] : quotations[index];
 
-            // Normalize subtotal and tax if it's a hold item
-            let sub = sourceItem.subtotal;
-            let tax = sourceItem.tax;
-            if (isHold) {
-                sub = sourceItem.cart.reduce((a, p) => a + (sourceItem.saleMode === 'wholesale' ? p.wholesalePrice : p.price) * p.qty, 0);
-                tax = Math.round(sub * .05);
-            }
+                if (!sourceItem) {
+                    console.error('Print failed: Source item not found.');
+                    return;
+                }
 
-            const q = {
-                customerName: sourceItem.customerName,
-                customerPhone: sourceItem.customerPhone,
-                shippingAddress: sourceItem.shippingAddress || '',
-                quoteNo: isHold ? 'EST-' + sourceItem.invoice.replace('#INV-', '') : sourceItem.quoteNo,
-                date: sourceItem.date,
-                time: sourceItem.time || sourceItem.holdTime,
-                saleMode: sourceItem.saleMode,
-                cart: sourceItem.cart,
-                subtotal: sub,
-                discount: sourceItem.discount || 0,
-                tax: tax,
-                shipping: sourceItem.shipping || 0,
-                total: sourceItem.total
-            };
+                // --- 1. Data Normalization & Helper Functions ---
+                const saleMode = sourceItem.saleMode || 'retail';
 
-            let itemsHtml = q.cart.map((item, i) => `
+                // Helper: Get the correct price based on sale mode
+                const getItemPrice = (item) => saleMode === 'wholesale' ? item.wholesalePrice : item.price;
+
+                // Helper: Format currency to 2 decimal places consistently
+                const formatMoney = (amount) => parseFloat(amount || 0).toFixed(2);
+
+                let subtotal = sourceItem.subtotal || 0;
+                let tax = sourceItem.tax || 0;
+
+                // Recalculate if it's a hold item
+                if (isHold && sourceItem.cart) {
+                    subtotal = sourceItem.cart.reduce((total, item) => total + (getItemPrice(item) * item.qty), 0);
+                    tax = Math.round(subtotal * 0.05);
+                }
+
+                // Standardized data object
+                const q = {
+                    customerName: sourceItem.customerName || 'Walk-in Customer',
+                    customerPhone: sourceItem.customerPhone || 'N/A',
+                    shippingAddress: sourceItem.shippingAddress || '',
+                    quoteNo: isHold ? 'EST-' + (sourceItem.invoice || '').replace('#INV-', '') : (sourceItem.quoteNo || 'N/A'),
+                    date: sourceItem.date || new Date().toLocaleDateString(),
+                    time: sourceItem.time || sourceItem.holdTime || '',
+                    saleMode: saleMode,
+                    cart: sourceItem.cart || [],
+                    subtotal: subtotal,
+                    discount: sourceItem.discount || 0,
+                    tax: tax,
+                    shipping: sourceItem.shipping || 0,
+                    total: sourceItem.total || 0
+                };
+
+                // --- 2. HTML Structure Generation ---
+
+                // Generate Table Rows
+                const itemsHtml = q.cart.map((item, i) => {
+                    const unitPrice = getItemPrice(item);
+                    const lineTotal = unitPrice * item.qty;
+
+                    return `
                 <tr>
                     <td>${i + 1}</td>
-                    <td>${item.name}</td>
-                    <td>${item.qty}</td>
-                    <td>৳ ${parseFloat(q.saleMode === 'wholesale' ? item.wholesalePrice : item.price).toFixed(2)}</td>
-                    <td>৳ ${parseFloat((q.saleMode === 'wholesale' ? item.wholesalePrice : item.price) * item.qty).toFixed(2)}</td>
+                    <td>${item.name || 'Unknown Product'}</td>
+                    <td>${item.qty || 0}</td>
+                    <td>৳ ${formatMoney(unitPrice)}</td>
+                    <td>৳ ${formatMoney(lineTotal)}</td>
                 </tr>
-            `).join('');
-
-            let html = `
-                <html>
-                <head>
-                    <title>Quotation - ${q.quoteNo}</title>
-                    <style>
-                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-                        body { font-family: 'Inter', sans-serif; padding: 40px; color: #1f2937; max-width: 850px; margin: auto; background: #fff; }
-                        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #16a34a; padding-bottom: 20px; }
-                        .brand-section h2 { margin: 0; font-size: 28px; color: #16a34a; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-                        .brand-section p { margin: 5px 0 0; color: #6b7280; font-size: 13px; }
-                        .quote-title { text-align: right; }
-                        .quote-title h1 { margin: 0; font-size: 32px; color: #374151; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-                        .quote-title p { margin: 5px 0 0; font-size: 14px; font-weight: 600; color: #4b5563; }
-                        
-                        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-                        .info-box { background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; }
-                        .info-box h3 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; color: #9ca3af; letter-spacing: 1px; }
-                        .info-box p { margin: 4px 0; font-size: 14px; color: #374151; }
-                        .info-box strong { color: #111827; }
-                        
-                        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 30px; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; }
-                        thead { background: #16a34a; color: white; }
-                        th { padding: 14px 12px; text-align: left; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-                        th:nth-child(3) { text-align: center; }
-                        th:nth-child(4), th:nth-child(5) { text-align: right; }
-                        td { padding: 14px 12px; font-size: 14px; border-bottom: 1px solid #e5e7eb; color: #4b5563; }
-                        tr:last-child td { border-bottom: none; }
-                        td:nth-child(3) { text-align: center; font-weight: 600; }
-                        td:nth-child(4), td:nth-child(5) { text-align: right; font-weight: 600; color: #111827; }
-                        
-                        .summary-container { display: flex; justify-content: space-between; align-items: flex-start; }
-                        .terms { width: 50%; font-size: 12px; color: #6b7280; line-height: 1.6; }
-                        .terms h4 { font-size: 13px; color: #374151; margin: 0 0 8px; text-transform: uppercase; }
-                        
-                        .totals { width: 320px; background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; }
-                        .total-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; color: #4b5563; }
-                        .total-row.final { border-top: 2px solid #d1d5db; margin-top: 10px; padding-top: 15px; }
-                        .total-row.final strong { color: #16a34a; font-size: 20px; font-weight: 800; }
-                        
-                        .footer { margin-top: 60px; text-align: center; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px; }
-                        
-                        @media print {
-                            body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div class="brand-section">
-                            <h2>TakaHata ERP</h2>
-                            <p>Super Shop Management System<br>Dhaka, Bangladesh<br>Contact: +880 1700 000000</p>
-                        </div>
-                        <div class="quote-title">
-                            <h1>Quotation</h1>
-                            <p># ${q.quoteNo}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-box">
-                            <h3>Quoted To</h3>
-                            <p><strong>${q.customerName}</strong></p>
-                            <p>Phone: ${q.customerPhone}</p>
-                            ${q.shippingAddress ? '<p>Address: ' + q.shippingAddress + '</p>' : ''}
-                        </div>
-                        <div class="info-box">
-                            <h3>Quote Details</h3>
-                            <p><strong>Date:</strong> ${q.date} ${q.time}</p>
-                            <p><strong>Pricing Tier:</strong> <span style="background: #e9f8ef; color: #15803d; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">${q.saleMode ? q.saleMode.toUpperCase() : 'RETAIL'}</span></p>
-                            <p><strong>Valid Until:</strong> 30 Days</p>
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th width="5%">#</th>
-                                <th width="45%">Product Description</th>
-                                <th width="10%">Qty</th>
-                                <th width="20%">Unit Price</th>
-                                <th width="20%">Line Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${itemsHtml}
-                        </tbody>
-                    </table>
-                    
-                    <div class="summary-container">
-                        <div class="terms">
-                            <h4>Terms & Conditions</h4>
-                            <p>1. This is a quotation, not an invoice.<br>
-                            2. Prices are subject to change without notice.<br>
-                            3. Quotation is valid for 30 days from the date of issue.<br>
-                            4. Subject to product availability at the time of order confirmation.</p>
-                        </div>
-                        <div class="totals">
-                            <div class="total-row"><span>Subtotal</span> <span>৳ ${parseFloat(q.subtotal).toFixed(2)}</span></div>
-                            <div class="total-row"><span>Discount</span> <span style="color:#ef4444">- ৳ ${parseFloat(q.discount).toFixed(2)}</span></div>
-                            <div class="total-row"><span>Tax/VAT (5%)</span> <span>৳ ${parseFloat(q.tax).toFixed(2)}</span></div>
-                            <div class="total-row"><span>Shipping/Service</span> <span>৳ ${parseFloat(q.shipping).toFixed(2)}</span></div>
-                            <div class="total-row final">
-                                <span style="font-weight: 800; font-size: 16px; color: #111827; padding-top: 3px;">Estimated Total</span> 
-                                <strong>৳ ${parseFloat(q.total).toFixed(2)}</strong>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="footer">
-                        Thank you for your business! Generated by TakaHata ERP Software.
-                    </div>
-                </body>
-                </html>
             `;
-            triggerMobileFriendlyPrint(html);
+                }).join('');
+
+                // Extracted Styles for cleaner markup
+                const styles = `
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+            body { font-family: 'Inter', sans-serif; padding: 0; margin: 0; color: #1f2937; width: 100%; background: #fff; font-size: 11px; }
+            .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #16a34a; padding-bottom: 15px; }
+            .brand-section h2 { margin: 0; font-size: 20px; color: #16a34a; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+            .brand-section p { margin: 4px 0 0; color: #6b7280; font-size: 11px; }
+            .quote-title { text-align: right; }
+            .quote-title h1 { margin: 0; font-size: 24px; color: #374151; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+            .quote-title p { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: #4b5563; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+            .info-box { background: #f9fafb; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb; }
+            .info-box h3 { margin: 0 0 6px; font-size: 10px; text-transform: uppercase; color: #9ca3af; letter-spacing: 1px; }
+            .info-box p { margin: 3px 0; font-size: 11px; color: #374151; }
+            .info-box strong { color: #111827; }
+            table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 20px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+            thead { background: #1ea353; color: white; display: table-header-group; } 
+            th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; border: none; }
+            th:nth-child(3) { text-align: center; }
+            th:nth-child(4), th:nth-child(5) { text-align: right; }
+            tr { page-break-inside: avoid; } 
+            td { padding: 14px 16px; font-size: 12px; border: none; border-bottom: 1px solid #e5e7eb; color: #4b5563; }
+            tbody tr:last-child td { border-bottom: none; }
+            td:nth-child(3) { text-align: center; font-weight: 600; }
+            td:nth-child(4), td:nth-child(5) { text-align: right; font-weight: 600; color: #111827; }
+            .summary-container { display: flex; justify-content: space-between; align-items: flex-start; page-break-inside: avoid; }
+            .terms { width: 55%; font-size: 10px; color: #6b7280; line-height: 1.5; padding-right: 15px;}
+            .terms h4 { font-size: 11px; color: #374151; margin: 0 0 6px; text-transform: uppercase; }
+            .totals { width: 40%; background: #f9fafb; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb; }
+            .total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; color: #4b5563; }
+            .total-row.final { border-top: 2px solid #d1d5db; margin-top: 6px; padding-top: 10px; }
+            .total-row.final strong { color: #16a34a; font-size: 14px; font-weight: 800; }
+            .footer { margin-top: 30px; text-align: center; padding-top: 15px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 10px; page-break-inside: avoid; }
+            @page { size: auto; margin: 10mm; } 
+            @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+        `;
+
+                // Conditional HTML parts
+                const addressHtml = q.shippingAddress ? `<p>Address: ${q.shippingAddress}</p>` : '';
+                const tierHtml = `<span style="background: #e9f8ef; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 10px;">${q.saleMode.toUpperCase()}</span>`;
+
+                // Combine into final document
+                const finalHtml = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Quotation - ${q.quoteNo}</title>
+                <style>${styles}</style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="brand-section">
+                        <h2>TakaHata ERP</h2>
+                        <p>Super Shop Management System<br>Dhaka, Bangladesh<br>Contact: +880 1700 000000</p>
+                    </div>
+                    <div class="quote-title">
+                        <h1>Quotation</h1>
+                        <p># ${q.quoteNo}</p>
+                    </div>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-box">
+                        <h3>Quoted To</h3>
+                        <p><strong>${q.customerName}</strong></p>
+                        <p>Phone: ${q.customerPhone}</p>
+                        ${addressHtml}
+                    </div>
+                    <div class="info-box">
+                        <h3>Quote Details</h3>
+                        <p><strong>Date:</strong> ${q.date} ${q.time}</p>
+                        <p><strong>Pricing Tier:</strong> ${tierHtml}</p>
+                        <p><strong>Valid Until:</strong> 30 Days</p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="45%">Product Description</th>
+                            <th width="10%">Qty</th>
+                            <th width="20%">Unit Price</th>
+                            <th width="20%">Line Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+                
+                <div class="summary-container">
+                    <div class="terms">
+                        <h4>Terms & Conditions</h4>
+                        <p>1. This is a quotation, not an invoice.<br>
+                        2. Prices are subject to change without notice.<br>
+                        3. Quotation is valid for 30 days from the date of issue.<br>
+                        4. Subject to product availability at the time of order confirmation.</p>
+                    </div>
+                    <div class="totals">
+                        <div class="total-row"><span>Subtotal</span> <span>৳ ${formatMoney(q.subtotal)}</span></div>
+                        <div class="total-row"><span>Discount</span> <span style="color:#ef4444">- ৳ ${formatMoney(q.discount)}</span></div>
+                        <div class="total-row"><span>Tax/VAT (5%)</span> <span>৳ ${formatMoney(q.tax)}</span></div>
+                        <div class="total-row"><span>Shipping/Service</span> <span>৳ ${formatMoney(q.shipping)}</span></div>
+                        <div class="total-row final">
+                            <span style="font-weight: 800; font-size: 12px; color: #111827; padding-top: 1px;">Estimated Total</span> 
+                            <strong>৳ ${formatMoney(q.total)}</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    Thank you for your business! Generated by TakaHata ERP Software.
+                </div>
+            </body>
+            </html>
+        `;
+
+                // --- 3. Execute Print ---
+                triggerMobileFriendlyPrint(finalHtml);
+
+            } catch (error) {
+                console.error('Error in printCombinedItem:', error);
+            }
         }
 
         function resumeCombinedItem(type, index) {
